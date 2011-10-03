@@ -70,7 +70,13 @@ function test_axis_rotate()
 	end
 end
 
+function test_clean()
+
+	print(clean(0.001))
+end
+
 -- Call the test functions
 --test_vector()
 --DemoTransforms()
-test_axis_rotate();
+--test_axis_rotate();
+test_clean();
