@@ -1,0 +1,8 @@
+LuaModeling is a library of 3D modeling routines written using
+the Lua language.
+
+Rather than be wrappers on other libraries, it takes the approach
+of directly implementing the code.  This is done to both increase 
+the ease of porting the code to multiple platforms, and for ensuring
+it can be run on embedded systems as well as the larger desktop
+systems.
