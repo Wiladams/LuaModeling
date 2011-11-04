@@ -1,4 +1,4 @@
-require "maths"
+--require "maths"
 
 function vec2_print(v)
 	io.write('[', v[1],',',v[2],']');
@@ -6,7 +6,7 @@ end
 
 function vec3_print(f, v)
 	--f:write('[', v[1],',',v[2],',',v[3],']');
-	f:write(string.format("[%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3]));
+	f:write(string.format("[%5.4f,%5.4f,%5.4f]", v[1],v[2],v[3]));
 end
 
 function vec3_print_tuple(v)
@@ -131,4 +131,27 @@ function GetBiCubicVertices(M, umult, cps, steps)
 	return results;
 end
 
+function print_face_tuple(f, a)
+	f:write("[");
+	for i=1, #a do
+		f:write(a[i]-1,',');
+	end
+	f:write(']');
 
+end
+
+function PolyMesh_print(f, mesh)
+	f:write("polyhedron(points= [\n");
+	for i,pt in ipairs(mesh:Vertices()) do
+		vec3_print(f, pt);
+		f:write(",\n");
+	end
+	f:write("],\n");
+
+	f:write("triangles=[\n");
+	for i,v in ipairs(mesh:Faces()) do
+		print_face_tuple(f, v)
+		f:write(',\n')
+	end
+	f:write("]);\n");
+end

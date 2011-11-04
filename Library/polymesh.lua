@@ -14,6 +14,13 @@ function PolyMesh:new(o)
 	return o
 end
 
+function PolyMesh:Vertices()
+	return vertices
+end
+
+function PolyMesh:Faces()
+	return faces
+end
 
 -- Add a vertex to the mesh
 function PolyMesh:addvertex(v)
@@ -24,6 +31,7 @@ end
 function PolyMesh:addvertices(verts)
 	for i,v in ipairs(verts) do
 		table.insert(vertices, v)
+	end
 
 	return #vertices;
 end
@@ -31,6 +39,7 @@ end
 -- Add a face to the mesh
 function PolyMesh:addface(f)
 	table.insert(faces, f)
+	return #faces;
 end
 
 function PolyMesh:addedge(v1, v2, f1, f2)
@@ -42,7 +51,7 @@ end
 
 
 
-mesh = PolyMesh:new()
-print(mesh:addvertex({0,0,0}))
-print(mesh:addvertex({1,1,1}))
+-- mesh = PolyMesh:new()
+-- print(mesh:addvertex({0,0,0}))
+-- print(mesh:addvertex({1,1,1}))
 

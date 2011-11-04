@@ -2,6 +2,8 @@
 Cphi = 1.618
 Cpi = 3.14159
 Ctau = Cpi*2
+Cepsilon = 0.00000001;
+
 Cdegtorad = 2*Cpi/360;
 
 -- Basic vector routines
@@ -502,6 +504,59 @@ end
 
 
 
+--[[
+==================================
+  Spherical coordinates
+==================================
+--]]
+
+--[[
+ create an instance of a spherical coordinate
+ long - rotation around z -axis
+ lat - latitude, starting at 0 == 'north pole'
+ rad - distance from center
+--]]
+function sph(long, lat, rad)
+	return {long, lat, rad}
+end
+
+-- Convert spherical to cartesian
+function sph_to_cart(s)
+	return {
+	clean(s[3]*sin(s[2])*cos(s[1])),
+	clean(s[3]*sin(s[2])*sin(s[1])),
+	clean(s[3]*cos(s[2]))
+	}
+end
+
+-- Convert from cartesian to spherical
+function sph_from_cart(c)
+	return sph(
+	math.atan2(c[2],c[1]),
+	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
+	math.sqrt(c[1]*c[1]+c[2]*c[2]+c[3]*c[3])
+	)
+end
+
+function sphu_from_cart(c, rad)
+	return sph(
+	math.atan2(c[2],c[1]),
+	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
+	rad
+	)
+end
+
+-- compute the chord distance between two points on a sphere
+function sph_dist(c1, c2)
+	return math.sqrt(
+	c1[3]*c1[3] + c2[3]*c2[3] -
+	2*c1[3]*c2[3]*
+	((math.cos(c1[2])*math.cos(c2[2])) +
+	math.cos(c1[1]-c2[1])*math.sin(c1[2])*math.sin(c2[2]))
+	);
+end
+
+
 
 -- Useful functions
 function factorial(n)
@@ -512,3 +567,51 @@ function factorial(n)
 	end
 end
 
+--[[
+ Function: clean
+
+ Parameters:
+	n - A number that might be very close to zero
+ Description:
+	There are times when you want a very small number to
+ 	just be zero, instead of being that very small number.
+	This function will compare the number to an arbitrarily small
+	number.  If it is smaller than the 'epsilon', then zero will be
+ 	returned.  Otherwise, the original number will be returned.
+--]]
+
+function clean(n)
+	if (n < 0) then
+		if (n < -Cepsilon) then
+			return n
+		else
+			return 0
+		end
+	else if (n < Cepsilon) then
+			return 0
+		else
+			return n
+		end
+	end
+end
+
+--[[
+ Function: safediv
+
+ Parameters
+	n - The numerator
+	d - The denominator
+
+ Description:
+	Since division by zero is generally not a desirable thing, safediv
+	will return '0' whenever there is a division by zero.  Although this will
+	mask some erroneous division by zero errors, it is often the case
+	that you actually want this behavior.  So, it makes it convenient.
+--]]
+function safediv(n,d)
+	if (d==0) then
+		return 0
+	end
+
+	return n/d;
+end
