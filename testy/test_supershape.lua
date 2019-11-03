@@ -1,9 +1,10 @@
-require ("supershape")
-require "openscad_print"
+package.path = "../?.lua;"..package.path
+
+local sshape = require ("lmodel.supershape")
+local oscad = require "lmodel.openscad_print"
 
 -- Create a supershape
-
-local f = assert(io.open("test_supershape.scad", 'w'));
+local f = assert(io.open("output/test_supershape.scad", 'w'));
 
 --	scale([10,10,10])
 --[[

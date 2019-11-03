@@ -4,7 +4,7 @@
 -- September 2011
 --=====================================
 
-require "glsl"
+require "lmodel.glsl"
 
 
 

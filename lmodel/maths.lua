@@ -577,17 +577,21 @@ end
  	just be zero, instead of being that very small number.
 	This function will compare the number to an arbitrarily small
 	number.  If it is smaller than the 'epsilon', then zero will be
- 	returned.  Otherwise, the original number will be returned.
+	 returned.  Otherwise, the original number will be returned.
+	 
+Perhaps this can simply be a  truncate, or round
 --]]
 
-function clean(n)
+function clean(n, epsilon)
+	epsilon = epsilon or Cepsilon
+
 	if (n < 0) then
-		if (n < -Cepsilon) then
+		if (n < -epsilon) then
 			return n
 		else
 			return 0
 		end
-	else if (n < Cepsilon) then
+	else if (n < epsilon) then
 			return 0
 		else
 			return n

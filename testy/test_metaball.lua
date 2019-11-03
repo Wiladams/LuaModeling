@@ -1,5 +1,7 @@
-require "openscad_print"
-require "metaball"
+package.path = "../?.lua;"..package.path
+
+local oscad = require "lmodel.openscad_print"
+local metaball = require "lmodel.metaball"
 
 balls = {{15, 15, 0, 5}, {30, 15, 0, 5}, {20, 40, 0, 5}}
 

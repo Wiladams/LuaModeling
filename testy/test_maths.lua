@@ -1,5 +1,7 @@
-require "maths"
-require "openscad_print"
+package.path = "../?.lua;"..package.path
+
+local maths = require "lmodel.maths"
+local oscad = require "lmodel.openscad_print"
 
 print("Lua Maths")
 

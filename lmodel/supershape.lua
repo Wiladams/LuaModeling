@@ -1,19 +1,23 @@
-require ("polymesh")
-
+local polymesh = require ("lmodel.polymesh")
+local sqrt = math.sqrt
+local sin, cos = math.sin, math.cos
 --[[
 =========================================
  SuperFormula evaluation
 =========================================
 --]]
+--local pi = 3.1415926535898
+local pi = math.pi
+
 
 -- Calculate length of a vector
 function vlength(v)
-	return math.sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3])
+	return sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3])
 end
 
 -- Turn polar back to cartesian
 function pocart(r0,r1, t1, p1)
-	return {r0*math.cos(t1)*r1*math.cos(p1),r0*math.sin(t1)*r1*math.cos(p1),r1*math.sin(p1)}
+	return {r0*cos(t1)*r1*cos(p1),r0*sin(t1)*r1*cos(p1),r1*sin(p1)}
 end
 
 -- Create an instance of the supershape data structure
@@ -66,8 +70,7 @@ function nozeros(v1,v2,v3,v4)
 	--return true
 end
 
-pi = 3.1415926535898
---print(math.pi)
+
 
 function RenderSuperShape(shape1, shape2,	phisteps, thetasteps)
 

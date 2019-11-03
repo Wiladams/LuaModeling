@@ -96,15 +96,15 @@ function polyhedron_print(f, pts, width, height)
 	f:write("polyhedron(points=\n");
 	f:write("[\n");
 	for i,pt in ipairs(pts) do
-		--vec3_print(f, pt[1]);
-		vec3_print(f, pt);
+		vec3_print(f, pt[1]);
+		--vec3_print(f, pt);
 		f:write(",\n");
 	end
 	f:write("],\n");
 
 	local indices = quad_indices_from_polymesh(width, height);
 
-	f:write("triangles=[\n");
+	f:write("faces=[\n");
 	for i,v in ipairs(indices) do
 		vec4_print(f,v); f:write(',\n');
 	end
@@ -148,7 +148,7 @@ function PolyMesh_print(f, mesh)
 	end
 	f:write("],\n");
 
-	f:write("triangles=[\n");
+	f:write("faces=[\n");
 	for i,v in ipairs(mesh:Faces()) do
 		print_face_tuple(f, v)
 		f:write(',\n')

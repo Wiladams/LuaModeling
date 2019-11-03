@@ -1,7 +1,9 @@
-require "STLWriter"
+package.path = "../?.lua;"..package.path
+
+local stl = require "lmodel.STLWriter"
 
 
-function test_writefacet()
+local function test_writefacet()
 
 	local facet = {
 		{1,1,1},
@@ -12,7 +14,7 @@ function test_writefacet()
 	writeASCIISTLFacet(facet1);
 end
 
-function test_writeASCIISTL()
+local function test_writeASCIISTL()
 	local facet = {
 		{1,1,1},
 		{2,2,2},

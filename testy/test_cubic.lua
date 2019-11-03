@@ -1,5 +1,7 @@
-require "maths"
-require "openscad_print"
+package.path = "../?.lua;"..package.path
+
+local maths = require "lmodel.maths"
+local oscad = require "lmodel.openscad_print"
 
 
 function test_cubic_vertices()
@@ -74,7 +76,7 @@ function test_bicubic_vertices()
 	width = usteps+1;
 	height = wsteps+1;
 
-	local f = assert(io.open("test_cubic_output.scad", 'w'));
+	local f = assert(io.open("output/test_cubic_output.scad", 'w'));
 
 	polyhedron_print(f, polypoints, width, height);
 	f:close();

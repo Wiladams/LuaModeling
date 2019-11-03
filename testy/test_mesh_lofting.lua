@@ -1,6 +1,8 @@
-require "imaging"
-require "openscad_print"
-require "Mesh_Renderer"
+package.path = "../?.lua;"..package.path
+
+local imaging = require "lmodel.imaging"
+local oscad = require "lmodel.openscad_print"
+local MeshRender = require "lmodel.Mesh_Renderer"
 
 function print_vertex_table(a)
 	print("[");

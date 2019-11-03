@@ -4,7 +4,7 @@
 -- September 2011
 --=====================================
 
-pi = 3.14159;
+local pi = math.pi
 
 -- Already built in, but I give them
 -- glsl names

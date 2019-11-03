@@ -1,5 +1,5 @@
-require "imaging"
-require "openscad_print"
+require "lmodel.imaging"
+require "lmodel.openscad_print"
 
 -- An iterator version
 function Iterate2DGrid(width, depth, resx, resy)
