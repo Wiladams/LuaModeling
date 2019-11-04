@@ -1,57 +1,63 @@
 -- polymesh.lua
+--[[
+	Representation of a polygon mesh
+]]
 
-PolyMesh = {}
+local PolyMesh = {}
+setmetatable(PolyMesh, {
+	__call = function(self, ...)
+		return self:new(...)
+	end;
+})
+local PolyMesh_mt = {
+	__index = PolyMesh;
+}
 
-function PolyMesh:new(o)
-	o = o or {}		-- create object if user does not provide one
-	setmetatable(o, self)
-	self.__index = self
 
-	vertices = {}
-	edges = {}
-	faces={}
+function PolyMesh.new(self, obj)
+	obj = obj or {}		-- create object if user does not provide one
 
-	return o
+	obj.vertices = obj.vertices or {}
+	obj.edges = obj.edges or {}
+	obj.faces= obj.faces or {}
+
+	setmetatable(obj, PolyMesh_mt)
+
+	return obj
 end
 
 function PolyMesh:Vertices()
-	return vertices
+	return self.vertices
 end
 
 function PolyMesh:Faces()
-	return faces
+	return self.faces
 end
 
 -- Add a vertex to the mesh
-function PolyMesh:addvertex(v)
-	table.insert(vertices, v)
-	return #vertices;
+function PolyMesh.addvertex(self, v)
+	table.insert(self.vertices, v)
+	return #self.vertices;
 end
 
-function PolyMesh:addvertices(verts)
+function PolyMesh.addvertices(self, verts)
 	for i,v in ipairs(verts) do
-		table.insert(vertices, v)
+		table.insert(self.vertices, v)
 	end
 
-	return #vertices;
+	return #self.vertices;
 end
 
 -- Add a face to the mesh
-function PolyMesh:addface(f)
-	table.insert(faces, f)
-	return #faces;
+function PolyMesh.addface(self, f)
+	table.insert(self.faces, f)
+	return #self.faces;
 end
 
-function PolyMesh:addedge(v1, v2, f1, f2)
-	table.insert(edges, {v1,v2,f1, f2})
-	return #edges;
+function PolyMesh.addedge(self, v1, v2, f1, f2)
+	table.insert(self.edges, {v1,v2,f1, f2})
+	return #self.edges;
 end
 
 
-
-
-
--- mesh = PolyMesh:new()
--- print(mesh:addvertex({0,0,0}))
--- print(mesh:addvertex({1,1,1}))
-
+return PolyMesh

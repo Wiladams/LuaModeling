@@ -3,88 +3,104 @@
 -- Contributed by: William A Adams
 -- September 2011
 --=====================================
+local exports = {}
 
-local pi = math.pi
+exports.pi = math.pi
 
 -- Already built in, but I give them
 -- glsl names
-function abs(x)
+local function abs(x)
 	return math.abs(x);
 end
+exports.abs = abs
 
-function ceil(x)
+local function ceil(x)
 	return math.ceil(x);
 end
+exports.ceil = ceil
 
-function floor(x)
+local function floor(x)
 	return math.floor(x);
 end
+exports.floor = floor
 
-function max(x,y)
+local function max(x,y)
 	return math.max(x,y);
 end
+exports.max = max
 
-function min(x,y)
+local function min(x,y)
 	return math.min(x,y);
 end
-
+exports.min = min
 
 
 --The following routines roughly map to those found in the
 --OpenGL Shading language GLSL. They are largely convenience
 --routines, but very useful when doing image processing.
 
-function radians(degrees)
+local function radians(degrees)
 	return pi/180 * degrees;
 end
+exports.radians = radians
 
-function degrees(radians)
+local function degrees(radians)
 	return 180/pi * radians;
 end
+exports.degrees = degrees
 
-function fract(x)
+local function fract(x)
 	return x - floor(x);
 end
+exports.fract = fract
 
-function fract3(x)
+local function fract3(x)
 	return {fract(x[1]), fract(x[2]), fract(x[3])};
 end
+exports.fract3 = fract3
 
-function mix(x, y, a)
+local function mix(x, y, a)
 	return x*(1-a)+y*a;
 end
+exports.mix = mix
 
-function mix3(x, y,a)
+local function mix3(x, y,a)
 	return {mix(x[1],y[1],a), mix(x[2],y[2],a), mix(x[3],y[3],a)};
 end
+exports.mix3 = mix3
 
-function mod(x, y)
+local function mod(x, y)
 	return x-(y*floor(x/y));
 end
+exports.mod = mod
 
-function clamp(x, minValue, maxValue)
+local function clamp(x, minValue, maxValue)
 	return min(max(x,minValue),maxValue);
 end
+exports.clamp = clamp
 
-function clamp3(x, minValue, maxValue)
+
+local function clamp3(x, minValue, maxValue)
 	return {clamp(x[1]), clamp(x[2]), clamp(x[3])};
 end
+exports.clamp3 = clamp3
 
-function dot(v1,v2)
+local function dot(v1,v2)
 	return v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3];
 end
+exports.dot = dot
 
-
-function step(edge, x)
+local function step(edge, x)
 	if (x < edge) then
 		return 0;
 	else
 		return 1;
 	end
 end
+exports.step = step
 
 -- Hermite smoothing between two points
-function herm(edge0, edge1, x)
+local function herm(edge0, edge1, x)
 	local range = (edge1 - edge0);
 	local distance = (x - edge0);
 	local t = clamp((distance / range), 0.0, 1.0);
@@ -92,8 +108,9 @@ function herm(edge0, edge1, x)
 
 	return r;
 end
+exports.herm = herm
 
-function smoothstep(edge0, edge1, x)
+local function smoothstep(edge0, edge1, x)
 	if (x <= edge0) then
 		return 0.0
 	end
@@ -104,3 +121,6 @@ function smoothstep(edge0, edge1, x)
 
 	return	herm(edge0, edge1, x);
 end
+exports.smoothstep = smoothstep
+
+return exports

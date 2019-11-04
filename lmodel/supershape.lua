@@ -1,6 +1,7 @@
-local polymesh = require ("lmodel.polymesh")
+local PolyMesh = require ("lmodel.polymesh")
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
+
 --[[
 =========================================
  SuperFormula evaluation
@@ -65,9 +66,8 @@ function EvalSuperShape2D(shape, phi) = _EvalSuperShape2D2(phi, shape[1], t1=SSC
 		http://paulbourke.net/geometry/supershape3d/
 --]]
 
-function nozeros(v1,v2,v3,v4)
+local function nozeros(v1,v2,v3,v4)
 	return v1 ~=0 and v2~=0 and v3~=0 and v3~=0
-	--return true
 end
 
 
@@ -108,3 +108,5 @@ function RenderSuperShape(shape1, shape2,	phisteps, thetasteps)
 
 	return mesh
 end
+
+return RenderSuperShape

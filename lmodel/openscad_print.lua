@@ -1,4 +1,12 @@
---require "maths"
+--[[
+	OpenSCAD print routines
+	Turn various parts of geometry into their OpenSCAD
+	equivalents.
+
+	PolyMesh_print() is the primary function to use from this file
+]]
+
+local exports = {}
 
 function vec2_print(v)
 	io.write('[', v[1],',',v[2],']');
@@ -155,3 +163,6 @@ function PolyMesh_print(f, mesh)
 	end
 	f:write("]);\n");
 end
+exports.PolyMesh_print = PolyMesh_print
+
+return exports

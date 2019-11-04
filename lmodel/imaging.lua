@@ -1,10 +1,16 @@
---=====================================
+
+--[[
+=====================================
 -- This is public Domain Code
 -- Contributed by: William A Adams
 -- September 2011
---=====================================
 
-require "lmodel.glsl"
+	Some routines to do rudimentary texture
+	mapping in OpenSCAD
+--]]
+
+local glsl = require "lmodel.glsl"
+local clamp = glsl.clamp
 
 
 
@@ -17,8 +23,6 @@ require "lmodel.glsl"
 --	Parameters
 --		len - length of array
 --		u - normalized value from 0..1
-
-
 function map_to_array(range, u)
 	local val = clamp(ceil(range*u),1,range);
 

@@ -13,11 +13,19 @@
 //
 //  In general, there are enough routines here to implement the various
 //  pieces necessary to make geodesic objects.
+
+BUGBUG - This is still old openscad code
+needs to be converted
 //==========================================
 --]]
 
-function poly_sum_interior_angles(sides) = (sides-2)*180;
-function poly_single_interior_angle(pq) = poly_sum_interior_angles(pq[0])/pq[0];
+local function poly_sum_interior_angles(sides)
+	return (sides-2)*180;
+end 
+
+local function poly_single_interior_angle(pq)
+	return poly_sum_interior_angles(pq[0])/pq[0];
+end
 
 
 
@@ -68,3 +76,6 @@ function class1_icosa_chord_factor(v1, v2, freq) = sph_dist(
 		icosa_class1(geo_tri2_tri3( [v1[0], v1[1], freq])),
 		icosa_class1(geo_tri2_tri3( [v2[0], v2[1], freq]))
 	);
+
+
+	return exports

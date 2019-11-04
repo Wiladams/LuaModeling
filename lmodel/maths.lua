@@ -1,8 +1,8 @@
 -- Useful constants
 Cphi = 1.618
-Cpi = 3.14159
-Ctau = Cpi*2
-Cepsilon = 0.00000001;
+local Cpi = math.pi
+local Ctau = Cpi*2
+local Cepsilon = 0.00000001;
 
 Cdegtorad = 2*Cpi/360;
 
