@@ -3,6 +3,26 @@ require "lmodel.openscad_print"
 
 local exports = {}
 
+local function gridIterator(width, depth, resx, resy)
+	
+	local gen = function(param, state)
+	
+		return {xcount = xcount, ycount = ycount}
+	end
+
+	local param = {
+		xiter = width * resx;
+		yiter = height * resy;
+		cellwidth = 1/resx, 
+		cellheight=1/resy
+	}
+	local state = {xcount=0, ycount=0}
+
+	return gen, param, state
+end
+exports.gridIterator = gridIterator
+
+
 -- An iterator version
 local function Iterate2DGrid(width, depth, resx, resy)
 	-- How big is each quad in the mesh
