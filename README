@@ -29,3 +29,10 @@ Look at the various test cases for examples of what can be done.
 As well as generating polygon mesh objects for OpenSCAD, you can generate a .stl file
 directly from the mesh as well.  That makes it perfect for generating files for 
 3D printing directly.
+
+TODO
+====
+* Remove more from global namespace
+* Write more test cases
+* Fix any bugs
+* Change objects to use named field instead of positions
