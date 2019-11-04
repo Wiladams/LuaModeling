@@ -1,7 +1,7 @@
 LuaModeling is a library of 3D modeling routines written using
 the Lua language.
 
-![Image](https://github.com/Wiladams/LuaModeling/blob/master/images/supershape2.png)
+![Image](https://github.com/Wiladams/LuaModeling/tree/master/images/supershape2.png)
 
 There are a number of techniques I want to use in 3D modeling.  My primary tool 
 of choice is OpenSCAD.  I choose OpenSCAD because it's relatively easy to use from
