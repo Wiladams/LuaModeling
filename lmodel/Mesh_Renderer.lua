@@ -1,8 +1,10 @@
-require "lmodel.imaging"
+local imaging = require "lmodel.imaging"
 require "lmodel.openscad_print"
 
+local exports = {}
+
 -- An iterator version
-function Iterate2DGrid(width, depth, resx, resy)
+local function Iterate2DGrid(width, depth, resx, resy)
 	-- How big is each quad in the mesh
 	local cellwidth = 1/resx;
 	local cellheight = 1/resy;
@@ -37,12 +39,12 @@ function Iterate2DGrid(width, depth, resx, resy)
 		return {{x1,y1},{x1frac,y1frac}}
 	end
 end
+exports.Iterate2DGrid = Iterate2DGrid
 
 
 
 
-
-function PrintHeightMesh(width, depth, resolution, scale, heightmap)
+local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 	hmwidth = heightmap[1];
 	hmdepth = heightmap[2];
 
@@ -59,9 +61,9 @@ function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 		local s = pt[2][1];
 		local t = pt[2][2];
 --io.write('s: ',s,' t: ',t,'\n');
-		local txcoord = image_gettexelcoords({hmwidth,hmdepth},s,t)
+		local txcoord = imaging.image_gettexelcoords({hmwidth,hmdepth},s,t)
 --io.write('\ntxcoord: ',txcoord[1], ' ',txcoord[2],'\n');
-		local offset = heightfield_getoffset(hmwidth,hmdepth, txcoord)
+		local offset = imaging.heightfield_getoffset(hmwidth,hmdepth, txcoord)
 --io.write('\nOffset: ', offset,'\n');
 		local height = heightmap[4][offset]
 		hscaled = height * scale;
@@ -76,4 +78,6 @@ function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 	polyhedron_print(f, polypoints, xcount, ycount);
 	f:close();
 end
+exports.PrintHeightMesh = PrintHeightMesh
 
+return exports

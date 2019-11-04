@@ -4,6 +4,13 @@ local imaging = require "lmodel.imaging"
 local oscad = require "lmodel.openscad_print"
 local MeshRender = require "lmodel.Mesh_Renderer"
 
+local map_to_array = imaging.map_to_array
+local checker_image = imaging.checker_image
+local PrintHeightMesh = MeshRender.PrintHeightMesh
+local Iterate2DGrid = MeshRender.Iterate2DGrid
+
+
+
 function print_vertex_table(a)
 	print("[");
 	for i=1, #a do
@@ -17,7 +24,7 @@ function print_vertex_table(a)
 end
 
 
-function test_griditerate()
+local function test_griditerate()
 	local vertices = {};
 
 	for v in Iterate2DGrid(3,3, 1,1) do
@@ -27,7 +34,7 @@ function test_griditerate()
 	print_vertex_table(vertices);
 end
 
-function test_heightmesh()
+local function test_heightmesh()
 	PrintHeightMesh(64, 64, {1/0.4,1/0.4}, 4, checker_image)
 end
 

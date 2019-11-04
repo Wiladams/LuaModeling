@@ -11,8 +11,9 @@
 
 local glsl = require "lmodel.glsl"
 local clamp = glsl.clamp
+local ceil = math.ceil
 
-
+local exports = {}
 
 --	Function: map_to_array
 --
@@ -28,6 +29,8 @@ function map_to_array(range, u)
 
 	return val;
 end
+exports.map_to_array = map_to_array
+
 
 --	Function: image()
 --
@@ -39,36 +42,38 @@ end
 --		height - height in pixels
 --		maxvalue	- The maximum value of any component
 --		values - The array of values representing the image
+--		cpe - characters per entry
 
-function image(width, height, maxvalue, values, cpe)
+local function image(width, height, maxvalue, values, cpe)
 	return {width, height, maxvalue, values, cpe};
 end
+exports.image = image
 
-function image_pixel_normalize(img, pixel)
+local function image_pixel_normalize(img, pixel)
 	return {pixel[1]/img[3], pixel[2]/img[3], pixel[3]/img[3]};
 end
 
-function image_getoffset(size, xy, cpe)
+local function image_getoffset(size, xy, cpe)
 	return ((size[1]*(size[2]-1-xy[2]))+xy[1])*cpe;
 end
 
-function _image_getpixel_1(img, offset)
+local function _image_getpixel_1(img, offset)
 	return {img[4][offset],img[4][offset],img[4][offset]};
 end
 
-function _image_getpixel_2(img, offset)
+local function _image_getpixel_2(img, offset)
 	return {img[4][offset],img[4][offset+1]};
 end
 
-function _image_getpixel_3(img, offset)
+local function _image_getpixel_3(img, offset)
 	return {img[4][offset],img[4][offset+1],img[4][offset+2]};
 end
 
-function _image_getpixel_4(img, offset)
+local function _image_getpixel_4(img, offset)
 	return {img[4][offset],img[4][offset+1],img[4][offset+2],img[4][offset+3]};
 end
 
-function _image_getpixel(img, offset)
+local function _image_getpixel(img, offset)
 	if (img[5] == 1) then
 		return _image_getpixel_1(img,offset)
 	end
@@ -88,24 +93,29 @@ function _image_getpixel(img, offset)
 	return {0};
 end
 
-function image_getpixel(img, xy)
+local function image_getpixel(img, xy)
 	return _image_getpixel(img, image_getoffset({img[1],img[2]}, xy));
 end
+exports.image_getpixel = image_getpixel
 
-function image_gettexelcoords(size, s, t)
+local function image_gettexelcoords(size, s, t)
 	txcoord = {map_to_array(size[1],s), map_to_array(size[2],t)};
 	return txcoord;
 end
+exports.image_gettexelcoords = image_gettexelcoords
 
 
-function heightfield_getoffset(width, depth, xy)
+local function heightfield_getoffset(width, depth, xy)
 	local offset = (width*(depth-xy[2]))+xy[1];
 	return offset;
 end
+exports.heightfield_getoffset = heightfield_getoffset
 
-function heightfield_getvalue(img, s, t)
+local function heightfield_getvalue(img, s, t)
 	return img[4][heightfield_getoffset(img[1],img[2], image_gettexelcoords({img[1],img[2]},s,t))];
 end
+exports.heightfield_getvalue = heightfield_getvalue
+
 
 function image_gettexel(img, s, t)
 	return image_pixel_normalize(img, image_getpixel(img, image_gettexelcoords(img,s,t)));
@@ -129,7 +139,8 @@ checker_array = {
 1, 0, 1, 0, 1, 0, 1, 0,
 };
 
-checker_image = image(8,8,1, checker_array, 1);
+local checker_image = image(8,8,1, checker_array, 1);
+exports.checker_image = checker_image
 
 --====================================
 -- COLOR MAPPING
@@ -139,8 +150,13 @@ checker_image = image(8,8,1, checker_array, 1);
 function luminance(rgb)
 	return dot({0.2125, 0.7154, 0.0721}, rgb);
 end
+exports.luminance = luminance
 
 -- For non-linear luminance, and old NTSC
 function luminance_ntsc(rgb)
 	return dot({0.299, 0.587, 0.114}, rgb);
 end
+exports.luminance_ntsc = luminance_ntsc
+
+return exports
+
