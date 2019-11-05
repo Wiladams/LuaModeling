@@ -10,6 +10,6 @@ balls = {{15, 15, 0, 5}, {30, 15, 0, 5}, {20, 40, 0, 5}}
 --	print();
 --end
 
-for v in IterateMetaballs({200,200,200}, balls) do
+for v in metaball.IterateMetaballs({200,200,200}, balls) do
 	vec3_print_tuple(v);
 end

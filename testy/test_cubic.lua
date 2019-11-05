@@ -4,7 +4,7 @@ local maths = require "lmodel.maths"
 local oscad = require "lmodel.openscad_print"
 
 
-function test_cubic_vertices()
+local function test_cubic_vertices()
 	cpts = {{0, 1, 0},{2,3,0}, {4,1,0},{5,2,0}};
 	cptsh = {{0, 1, 0,1},{2,3,0,1}, {4,1,0,1},{5,2,0,1}};
 
@@ -27,10 +27,10 @@ function test_cubic_vertices()
 		table.insert(points,v);
 	end
 
-	polygon_print(points);
+	oscad.polygon_print(points);
 end
 
-function getpolymesh(M, umult, mesh, usteps, wsteps)
+local function getpolymesh(M, umult, mesh, usteps, wsteps)
 
 	local thickness = 1;
 	local vertices = {};
@@ -58,7 +58,7 @@ function getpolymesh(M, umult, mesh, usteps, wsteps)
 end
 
 
-function test_bicubic_vertices()
+local function test_bicubic_vertices()
 	local gcp4 = {{0,30,0,1}, {10,40,0,1}, {20,40,0,1}, {30,30,0,1}};
 	local gcp3 = {{5,20,10,1}, {10,20,20,1}, {15,25,15,1}, {20,20,5,1}};
 	local gcp2 = {{5,10,10,1}, {10,10,20,1}, {15,5,15,1}, {20,10,5,1}};
@@ -78,7 +78,7 @@ function test_bicubic_vertices()
 
 	local f = assert(io.open("output/test_cubic_output.scad", 'w'));
 
-	polyhedron_print(f, polypoints, width, height);
+	oscad.polyhedron_print(f, polypoints, width, height);
 	f:close();
 
 end

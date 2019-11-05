@@ -7,26 +7,45 @@
 ]]
 
 local exports = {}
+local write = io.write
+local format = string.format
 
-function vec2_print(v)
-	io.write('[', v[1],',',v[2],']');
+local function printf(fmt, ...)
+	write(format(fmt, ...))
 end
 
-function vec3_print(f, v)
-	--f:write('[', v[1],',',v[2],',',v[3],']');
-	f:write(string.format("[%5.4f,%5.4f,%5.4f]", v[1],v[2],v[3]));
+local function fwrite(f, ...)
+	f:write(...)
+end
+
+local function fprintf(f, fmt, ...)
+	f:write(format(fmt, ...))
+end
+
+
+function vec2_print(v)
+	write('[', v[1],',',v[2],']');
+end
+
+function vec3_fwrite(f, v)
+	f:write(format("[%5.4f,%5.4f,%5.4f]", v[1],v[2],v[3]));
 end
 
 function vec3_print_tuple(v)
 	io.write(v[1],',',v[2],',',v[3],'\n');
 end
 
-function vec4_print(f, v)
-	f:write('[', v[1],',',v[2],',',v[3],',',v[4],']');
+function vec4_print(v)
+	write('[', v[1],',',v[2],',',v[3],',',v[4],']');
 	--io.write("[%5.2f,%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3],v[4]);
 end
 
-function mat4_print(m)
+function vec4_fprint(f, v)
+	fwrite(f,'[', v[1],',',v[2],',',v[3],',',v[4],']');
+	--io.write("[%5.2f,%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3],v[4]);
+end
+
+local function mat4_print(m)
 	print('[');
 	vec4_print(m[1]);io.write('\n');
 	vec4_print(m[2]);io.write('\n');
@@ -36,7 +55,7 @@ function mat4_print(m)
 end
 
 
-function matx3_print(a)
+local function matx3_print(a)
 print("[");
 	for i=1,#a  do
 		vec3_print(a[i]);
@@ -46,7 +65,7 @@ print("[");
 end
 
 
-function matx4_print(a)
+local function matx4_print(a)
 print("[");
 	for i=1,#a  do
 		vec4_print(a[i]);
@@ -55,7 +74,7 @@ print("[");
 	print("]");
 end
 
-function table_print_indices(a)
+local function table_print_indices(a)
 	print("[");
 	for i=1, #a do
 		io.write(i-1,',');
@@ -66,7 +85,7 @@ function table_print_indices(a)
 end
 
 
-function polygon_print(a)
+local function polygon_print(a)
 	print("polygon(points=");
 	print("[");
 	for i=1,#a  do
@@ -78,13 +97,14 @@ function polygon_print(a)
 	table_print_indices(a);
 	print("]);");
 end
+exports.polygon_print = polygon_print
 
-function imesh(col, row, width)
+local function imesh(col, row, width)
 	index = ((row-1)*width)+col-1;
 	return index;
 end
 
-function quad_indices_from_polymesh(width, height)
+local function quad_indices_from_polymesh(width, height)
 	local indices = {};
 
 	for row =1, height-1 do
@@ -99,13 +119,12 @@ function quad_indices_from_polymesh(width, height)
 	return indices;
 end
 
-function polyhedron_print(f, pts, width, height)
+local function polyhedron_print(f, pts, width, height)
 
 	f:write("polyhedron(points=\n");
 	f:write("[\n");
 	for i,pt in ipairs(pts) do
-		vec3_print(f, pt[1]);
-		--vec3_print(f, pt);
+		vec3_fwrite(f, pt[1]);
 		f:write(",\n");
 	end
 	f:write("],\n");
@@ -114,14 +133,14 @@ function polyhedron_print(f, pts, width, height)
 
 	f:write("faces=[\n");
 	for i,v in ipairs(indices) do
-		vec4_print(f,v); f:write(',\n');
+		vec4_fprint(f,v); f:write(',\n');
 	end
 	f:write("]);\n");
 end
+exports.polyhedron_print = polyhedron_print
 
 
-
-function GetBiCubicVertices(M, umult, cps, steps)
+local function GetBiCubicVertices(M, umult, cps, steps)
 
 	G = cubic_vec3_to_cubic_vec4(cps);
 	mat4_print(G);
@@ -139,7 +158,7 @@ function GetBiCubicVertices(M, umult, cps, steps)
 	return results;
 end
 
-function print_face_tuple(f, a)
+local function print_face_tuple(f, a)
 	f:write("[");
 	for i=1, #a do
 		f:write(a[i]-1,',');
@@ -148,10 +167,10 @@ function print_face_tuple(f, a)
 
 end
 
-function PolyMesh_print(f, mesh)
+local function PolyMesh_print(f, mesh)
 	f:write("polyhedron(points= [\n");
 	for i,pt in ipairs(mesh:Vertices()) do
-		vec3_print(f, pt);
+		vec3_fwrite(f, pt);
 		f:write(",\n");
 	end
 	f:write("],\n");
