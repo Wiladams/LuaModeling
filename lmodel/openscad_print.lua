@@ -124,7 +124,7 @@ local function polyhedron_print(f, pts, width, height)
 	f:write("polyhedron(points=\n");
 	f:write("[\n");
 	for i,pt in ipairs(pts) do
-		vec3_fwrite(f, pt[1]);
+		vec3_fwrite(f, pt);
 		f:write(",\n");
 	end
 	f:write("],\n");

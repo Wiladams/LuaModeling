@@ -87,10 +87,12 @@ end
 local function add(x,y)
 	return apply2(function(x,y) return x + y end,x,y)
 end
+exports.add = add
 
 local function sub(x,y)
 	return apply2(function(x,y) return x - y end,x,y)
 end
+exports.sub = sub
 
 local function mul(x,y)
 	if type(x)=="number" then -- swap params, just in case y is a vector
@@ -99,10 +101,12 @@ local function mul(x,y)
  		return apply2(function(x,y) return x * y end,x,y)
 	end
 end
+exports.mul = mul
 
 local function div(x,y)
 	return apply2(function(x,y) return x / y end,x,y)
 end
+exports.div = div
 
 -- improved equality test with tolerance
 local function equal(v1,v2,tol)
@@ -111,6 +115,7 @@ local function equal(v1,v2,tol)
 	
 	return apply(function(x) return x<=tol end,abs(sub(v1,v2)))
 end
+exports.equal = equal
 
 local function notEqual(v1,v2,tol)
 	assert(type(v1)==type(v2),"equal("..type(v1)..","..type(v2)..") : incompatible types")
@@ -118,6 +123,7 @@ local function notEqual(v1,v2,tol)
 
 	return apply(function(x) return x>tol end,abs(sub(v1,v2)))
 end
+exports.notEqual = notEqual
 
 --[[
 	Angle and Trigonometry Functions (5.1)
@@ -361,7 +367,7 @@ local function cross(v1, v2)
 		(v1[1]*v2[2])-(v2[1]*v1[2])
 	}
 end
-
+exports.cross = cross
 
 --=====================================
 --	Vector Relational (5.4)

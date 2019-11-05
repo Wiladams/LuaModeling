@@ -55,7 +55,7 @@ end
 	from the array of vertices.
 ]]
 -- Add a face to the mesh
-function PolyMesh.addface(self, f)
+function PolyMesh.addface(self, face)
 	-- BUGBUG - we want to calculate the face normal
 	-- right here so we don't have to calculate it later
 	local p0 = self.vertices[face[1]];
@@ -69,7 +69,7 @@ function PolyMesh.addface(self, f)
 
 	face.normal = norm
 
-	table.insert(self.faces, f)
+	table.insert(self.faces, face)
 
 	return #self.faces;
 end

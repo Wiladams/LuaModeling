@@ -72,6 +72,7 @@ local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 		local hscaled = height * scale;
 --io.write(height);
 		local point = {pt[1][1], pt[1][2], hscaled};
+--print(point, point[1],point[2],point[3])
 		table.insert(polypoints, point);
 	end
 

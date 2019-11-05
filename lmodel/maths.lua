@@ -404,7 +404,7 @@ function bicerp(u, w, mesh, M, umult)
 	--vec3_print(npt);io.write('\n');
 
 	-- return both the point, and the tangent
-	return {spt, npt};
+	return {point = spt, normal = npt};
 end
 
 -- Blending Functions
