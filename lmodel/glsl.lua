@@ -4,12 +4,17 @@
 -- September 2011
 --=====================================
 
+local abs = math.abs
 local min = math.min
 local max = math.max
 local floor = math.floor
 local ceil = math.ceil
 local rad = math.rad
 local deg = math.deg
+local log = math.log
+local pow = math.pow
+
+local epsilon = 1E-12
 
 --[[
 	glsl is the pipeline programming language for OpenGL
@@ -28,17 +33,211 @@ local exports = {}
 
 -- built-ins with same semantics
 exports.pi = math.pi
-exports.abs = math.abs
-exports.ceil = math.ceil
-exports.floor = math.floor
-exports.max = math.max
-exports.min = math.min
-exports.radians = math.rad
-exports.degrees = math.deg
 
---The following routines roughly map to those found in the
---OpenGL Shading language GLSL. They are largely convenience
---routines, but very useful when doing image processing.
+
+--[[
+	Apply the function 'f' to every element
+	of vector 'v'
+
+	RETURN: returns a new instance of the table, does
+	not alter the existing table.
+--]]
+local function apply(f, v)
+	if type(v) == "number" then
+		return f(v)
+	end
+
+	if type(v) == "table" then
+		local res = {}
+		for i=1,#v do
+			res[i] = f(v[i])
+		end
+		return res
+	end
+
+	return nil
+end
+
+--[[
+	Apply the function 'f' using the two arrays
+	'v1' and 'v2'
+]]
+local function apply2(f, v1, v2)
+	if type(v1) == "number" then
+		return f(v1, v2)
+	end
+
+	if type(v1) == "table" then
+		local res = {}
+		if type(v2)=="number" then
+            for i=1,#v1 do
+				res[i] = f(v1[i],v2)
+			end
+		else
+			for i=1,#v1 do
+				res[i] = f(v1[i], v2[i])
+			end
+		end
+		return res
+	end
+	
+	return nil
+end
+
+local function add(x,y)
+	return apply2(function(x,y) return x + y end,x,y)
+end
+
+local function sub(x,y)
+	return apply2(function(x,y) return x - y end,x,y)
+end
+
+local function mul(x,y)
+	if type(x)=="number" then -- swap params, just in case y is a vector
+		return apply2(function(x,y) return x * y end,y,x)
+	else
+ 		return apply2(function(x,y) return x * y end,x,y)
+	end
+end
+
+local function div(x,y)
+	return apply2(function(x,y) return x / y end,x,y)
+end
+
+-- improved equality test with tolerance
+local function equal(v1,v2,tol)
+	assert(type(v1)==type(v2),"equal("..type(v1)..","..type(v2)..") : incompatible types")
+	if not tol then tol=1E-12 end
+	
+	return apply(function(x) return x<=tol end,abs(sub(v1,v2)))
+end
+
+local function notEqual(v1,v2,tol)
+	assert(type(v1)==type(v2),"equal("..type(v1)..","..type(v2)..") : incompatible types")
+	tol = tol or epsilon
+
+	return apply(function(x) return x>tol end,abs(sub(v1,v2)))
+end
+
+--[[
+	Angle and Trigonometry Functions (5.1)
+
+	These are done using the 'apply' functions, because
+	the argument can be either a single number, or an 
+	array of numbers.  Rather than having all that code
+	replicated for each function, it's conveniently collapsed
+	into the 'apply' functions.
+--]]
+
+
+local function radians(degs)
+	return apply(math.rad, degs)
+end
+exports.radians = radians
+
+local function degrees(rads)
+	return apply(math.deg, rads)
+end
+exports.degrees = degrees
+
+local function sin(rads)
+	return apply(math.sin, rads)
+end
+exports.sin = sin
+
+local function cos(rads)
+	return apply(math.cos, rads)
+end
+exports.cos = cos
+
+local function tan(rads)
+	return apply(math.tan, rads)
+end
+exports.tan = tan
+
+local function asin(rads)
+	return apply(math.asin, rads)
+end
+exports.asin = asin
+
+local function acos(rads)
+	return apply(math.acos, rads)
+end
+exports.acos = acos
+
+local function atan(rads)
+	return apply(math.atan, rads)
+end
+exports.atan = atan
+
+local function atan2(y,x)
+	return apply2(math.atan2,y,x)
+end
+exports.atan2 = atan2
+
+local function sinh(rads)
+	return apply(math.sinh, rads)
+end
+exports.sinh = sinh
+
+local function cosh(rads)
+	return apply(math.cosh, rads)
+end
+exports.cosh = cosh
+
+local function tanh(rads)
+	return apply(math.tanh, rads)
+end
+exports.tanh = tanh
+
+
+--=====================================
+--	Exponential Functions (5.2)
+--=====================================
+exports.pow = math.pow
+
+function exports.exp2(x) return pow(2, x) end
+function exports.log2(x) return log(x)/log(2)  end
+
+exports.sqrt = math.sqrt
+
+function exports.inv(x) return 1/x end
+function exports.invsqrt(x) return 1/sqrt(x) end
+
+
+--=====================================
+--	Common Functions (5.3)
+--=====================================
+exports.abs = math.abs
+
+function exports.sign(x)
+	if x > 0 then
+		return 1
+	elseif x < 0 then
+		return -1
+	end
+
+	return 0
+end
+
+exports.floor = math.floor
+
+function exports.trunc(x)
+	local asign = exports.sign(x)
+	local res = asign * floor(abs(x))
+
+	return res
+end
+
+function exports.round(x)
+	local asign = exports.sign(x)
+	local res = asign*floor((abs(x) + 0.5))
+
+	return res
+end
+
+exports.ceil = math.ceil
+
 
 local function fract(x)
 	return x - floor(x);
@@ -49,6 +248,9 @@ local function fract3(x)
 	return {fract(x[1]), fract(x[2]), fract(x[3])};
 end
 exports.fract3 = fract3
+
+exports.max = math.max
+exports.min = math.min
 
 local function mix(x, y, a)
 	return x*(1-a)+y*a;
@@ -75,11 +277,6 @@ local function clamp3(x, minValue, maxValue)
 	return {clamp(x[1]), clamp(x[2]), clamp(x[3])};
 end
 exports.clamp3 = clamp3
-
-local function dot(v1,v2)
-	return v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3];
-end
-exports.dot = dot
 
 local function step(edge, x)
 	if (x < edge) then
@@ -113,5 +310,85 @@ local function smoothstep(edge0, edge1, x)
 	return	herm(edge0, edge1, x);
 end
 exports.smoothstep = smoothstep
+
+
+--=====================================
+--	Geometric Functions (5.4)
+--=====================================
+function dot(v1,v2)
+	if type(v1) == 'number' then
+		return v1*v2
+	end
+
+	if (type(v1) == 'table') then
+		-- if v1 is a table
+		-- it could be vector.vector
+		-- or matrix.vector
+		if type(v1[1] == "number") then
+			local sum=0
+			for i=1,#v1 do
+				sum = sum + (v1[i]*v2[i])
+			end
+			return sum;
+		else -- matrix.vector
+			local res={}
+			for i,x in ipairs(v1) do
+				res[i] = dot(x,v2) end
+			return res
+		end
+	end
+end
+exports.dot = dot
+
+local function length(v)
+	return sqrt(dot(v,v))
+end
+exports.length = length
+
+local function distance(v1,v2)
+	return length(sub(v1,v2))
+end
+exports.distance = distance
+
+local function cross(v1, v2)
+	if #v1 ~= 3 then
+		return nil
+	end
+
+	return {
+		(v1[2]*v2[3])-(v2[2]*v1[3]),
+		(v1[3]*v2[1])-(v2[3]*v1[1]),
+		(v1[1]*v2[2])-(v2[1]*v1[2])
+	}
+end
+
+
+--=====================================
+--	Vector Relational (5.4)
+--=====================================
+local function isnumtrue(x)
+	return x ~= nil and x ~= 0
+end
+exports.isnumtrue = isnumtrue
+
+local function any(x)
+	for i=1,#x do
+		local f = isnumtrue(x[i])
+		if f then return true end
+	end
+
+	return false
+end
+exports.any = any
+
+local function all(x)
+	for i=1,#x do
+		local f = isnumtrue(x[i])
+		if not f then return false end
+	end
+
+	return true
+end
+exports.all = all
 
 return exports
