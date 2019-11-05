@@ -3,51 +3,35 @@
 -- Contributed by: William A Adams
 -- September 2011
 --=====================================
+
+--[[
+	glsl is the pipeline programming language for OpenGL
+	The language contains various math functions that have
+	specific semantics.  We include them here to have some
+	lua equivalents of the same.  
+	
+	In many cases the semantics
+	are exactly the same as the built-in functions.  In those 
+	cases, we just alias the builtin functions.
+
+	In some cases they might have slightly different semantics, 
+	so we replicate the the specific glsl function.
+]]
 local exports = {}
 
+-- built-ins with same semantics
 exports.pi = math.pi
-
--- Already built in, but I give them
--- glsl names
-local function abs(x)
-	return math.abs(x);
-end
-exports.abs = abs
-
-local function ceil(x)
-	return math.ceil(x);
-end
-exports.ceil = ceil
-
-local function floor(x)
-	return math.floor(x);
-end
-exports.floor = floor
-
-local function max(x,y)
-	return math.max(x,y);
-end
-exports.max = max
-
-local function min(x,y)
-	return math.min(x,y);
-end
-exports.min = min
-
+exports.abs = math.abs
+exports.ceil = math.ceil
+exports.floor = math.floor
+exports.max = math.max
+exports.min = math.min
+exports.radians = math.rad
+exports.degrees = math.deg
 
 --The following routines roughly map to those found in the
 --OpenGL Shading language GLSL. They are largely convenience
 --routines, but very useful when doing image processing.
-
-local function radians(degrees)
-	return pi/180 * degrees;
-end
-exports.radians = radians
-
-local function degrees(radians)
-	return 180/pi * radians;
-end
-exports.degrees = degrees
 
 local function fract(x)
 	return x - floor(x);

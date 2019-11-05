@@ -11,7 +11,7 @@ local function test_writefacet()
 		{3,3,3}
 	};
 
-	writeASCIISTLFacet(facet1);
+	stl.writeASCIISTLFacet(facet1);
 end
 
 local function test_writeASCIISTL()
@@ -21,7 +21,7 @@ local function test_writeASCIISTL()
 		{3,3,3}
 	};
 
-	writeASCIISTL('testname', {facet});
+	stl.writeASCIISTL('testname', {facet});
 
 end
 

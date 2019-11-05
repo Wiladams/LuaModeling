@@ -43,46 +43,6 @@ local function gridIterator(width, depth, resx, resy)
 end
 exports.gridIterator = gridIterator
 
---[[
--- An iterator version
-local function Iterate2DGrid(width, depth, resx, resy)
-	-- How big is each quad in the mesh
-	local cellwidth = 1/resx;
-	local cellheight = 1/resy;
-
-	-- How many iterations
-	local xiter = width*resx;
-	local yiter = depth*resy;
-
-	local ycnt =0;
-	local xcnt =-1;
-
-	return function()
-		xcnt = xcnt+1;
-
-		if (xcnt > xiter) then
-			xcnt = 0;
-			ycnt = ycnt+1;
-			if (ycnt > yiter) then
-				return nil;
-			end
-		end
-
-		-- These represent the mesh coordinates
-		x1=xcnt*cellwidth;
-		y1=ycnt*cellheight;
-
-		-- These represent the normalized coordinates
-		x1frac = (xcnt)/xiter;
-		y1frac = (ycnt)/yiter;
-
-
-		return {{x1,y1},{x1frac,y1frac}}
-	end
-end
-exports.Iterate2DGrid = Iterate2DGrid
---]]
-
 
 
 local function PrintHeightMesh(width, depth, resolution, scale, heightmap)

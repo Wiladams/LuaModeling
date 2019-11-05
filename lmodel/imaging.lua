@@ -10,8 +10,8 @@
 --]]
 
 local glsl = require "lmodel.glsl"
-local clamp = glsl.clamp
-local ceil = math.ceil
+local clamp, ceil = glsl.clamp, glsl.ceil
+
 
 local exports = {}
 
@@ -117,9 +117,10 @@ end
 exports.heightfield_getvalue = heightfield_getvalue
 
 
-function image_gettexel(img, s, t)
+local function image_gettexel(img, s, t)
 	return image_pixel_normalize(img, image_getpixel(img, image_gettexelcoords(img,s,t)));
 end
+exports.image_gettexel = image_gettexel
 
 
 --	checker_image
@@ -128,7 +129,7 @@ end
 --	It is a simple black/white image that is 8x8 pixels, like a standard
 --	chess board.
 
-checker_array = {
+local checker_array = {
 0, 1, 0, 1, 0, 1, 0, 1,
 1, 0, 1, 0, 1, 0, 1, 0,
 0, 1, 0, 1, 0, 1, 0, 1,
@@ -147,13 +148,13 @@ exports.checker_image = checker_image
 --====================================
 
 -- For modern day monitor luminance
-function luminance(rgb)
+local function luminance(rgb)
 	return dot({0.2125, 0.7154, 0.0721}, rgb);
 end
 exports.luminance = luminance
 
 -- For non-linear luminance, and old NTSC
-function luminance_ntsc(rgb)
+local function luminance_ntsc(rgb)
 	return dot({0.299, 0.587, 0.114}, rgb);
 end
 exports.luminance_ntsc = luminance_ntsc

@@ -1,20 +1,20 @@
-function writeASCIISTL(name, facets)
-	io.write(string.format('solid %s\n',name));
+local write = io.write
+local format = string.format
 
-	for i=1,#facets  do
-		writeASCIISTLFacet(facets[i]);
-	end
+local exports = {}
 
-	io.write(string.format("endsolid %s\n", name));
+local function writeASCIISTLVertex(v)
+	write(string.format("vertex %5.4f %5.4f %5.4f\n", v[1],v[2],v[3]));
 end
+exports.writeASCIISTLVertex = writeASCIISTLVertex
 
-function writeASCIISTLFacet(facet)
+local function writeASCIISTLFacet(facet)
 	-- calculate the facet normal
 	local fnormal = {0,0,0};
 
 	-- header
-	io.write('facet normal 0 0 0\n');
-	io.write('outer loop\n');
+	write('facet normal 0 0 0\n');
+	write('outer loop\n');
 
 	-- print vertices
 	writeASCIISTLVertex(facet[1]);
@@ -22,10 +22,21 @@ function writeASCIISTLFacet(facet)
 	writeASCIISTLVertex(facet[3]);
 
 	-- footer
-	io.write('endloop\n');
-	io.write('endfacet\n');
+	write('endloop\n');
+	write('endfacet\n');
 end
+exports.writeASCIISTLFacet = writeASCIISTLFacet
 
-function writeASCIISTLVertex(v)
-	io.write(string.format("vertex %5.4f %5.4f %5.4f\n", v[1],v[2],v[3]));
+local function writeASCIISTL(name, facets)
+	write(string.format('solid %s\n',name));
+
+	for i=1,#facets  do
+		writeASCIISTLFacet(facets[i]);
+	end
+
+	write(string.format("endsolid %s\n", name));
 end
+exports.writeASCIISTL = writeASCIISTL
+
+return exports
+
