@@ -7,7 +7,7 @@ local MeshRender = require "lmodel.Mesh_Renderer"
 local map_to_array = imaging.map_to_array
 local checker_image = imaging.checker_image
 local PrintHeightMesh = MeshRender.PrintHeightMesh
-local Iterate2DGrid = MeshRender.Iterate2DGrid
+local gridIterator = MeshRender.gridIterator
 
 
 
@@ -27,7 +27,7 @@ end
 local function test_griditerate()
 	local vertices = {};
 
-	for v in Iterate2DGrid(3,3, 1,1) do
+	for _, v in gridIterator(3,3, 1,1) do
 		table.insert(vertices,v);
 	end
 
@@ -35,16 +35,11 @@ local function test_griditerate()
 end
 
 local function test_heightmesh()
-	PrintHeightMesh(64, 64, {1/0.4,1/0.4}, 4, checker_image)
+	PrintHeightMesh(64, 64, {xres=1/0.4, yres=1/0.4}, 4, checker_image)
 end
 
-function test_glsl()
-io.write('0 ',map_to_array(3, 0),'\n');
-io.write('0.3 ',map_to_array(3, 0.3),'\n');
-io.write('1 ',map_to_array(3, 0.66),'\n');
-io.write('3 ',map_to_array(3, 1),'\n');
-end
 
---test_griditerate();
-test_heightmesh();
---test_glsl();
+
+test_griditerate();
+--test_heightmesh();
+

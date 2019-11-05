@@ -5,15 +5,36 @@ local exports = {}
 
 local function gridIterator(width, depth, resx, resy)
 	
-	local gen = function(param, state)
+	local function gen(param, state)
+		local xcnt = state.xcount
+		local ycnt = state.ycount
 	
-		return {xcount = xcount, ycount = ycount}
+		if (xcnt > param.xiter) then
+			xcnt = 0;
+			ycnt = ycnt+1;
+			if (ycnt > param.yiter) then
+				return nil;
+			end
+		end
+	
+		-- These represent the mesh coordinates
+		local x1=xcnt*param.cellwidth;
+		local y1=ycnt*param.cellheight;
+	
+		-- These represent the normalized coordinates
+		local x1frac = (xcnt)/param.xiter;
+		local y1frac = (ycnt)/param.yiter;
+	
+		xcnt = xcnt + 1
+	
+		return {xcount = xcnt, ycount = ycnt}, {{x1,y1},{x1frac,y1frac}}
 	end
 
 	local param = {
-		xiter = width * resx;
-		yiter = height * resy;
-		cellwidth = 1/resx, 
+		xiter = width * resx;	-- how many iterations
+		yiter = depth * resy;
+
+		cellwidth = 1/resx, 	-- how big is each quad in the mesh
 		cellheight=1/resy
 	}
 	local state = {xcount=0, ycount=0}
@@ -22,7 +43,7 @@ local function gridIterator(width, depth, resx, resy)
 end
 exports.gridIterator = gridIterator
 
-
+--[[
 -- An iterator version
 local function Iterate2DGrid(width, depth, resx, resy)
 	-- How big is each quad in the mesh
@@ -60,24 +81,24 @@ local function Iterate2DGrid(width, depth, resx, resy)
 	end
 end
 exports.Iterate2DGrid = Iterate2DGrid
-
+--]]
 
 
 
 local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
-	hmwidth = heightmap[1];
-	hmdepth = heightmap[2];
+	local hmwidth = heightmap[1];
+	local hmdepth = heightmap[2];
 
  	-- How many iterations
- 	local xcount = (width*resolution[1])+1;
- 	local ycount = (depth*resolution[2])+1;
+ 	local xcount = (width*resolution.xres)+1;
+ 	local ycount = (depth*resolution.yres)+1;
 
 	-- First get the vertices and normalized coordinates
 	local polypoints = {};
 
 	-- Use the height map to calculate the heights for each
 	-- vertex, and create the points for the mesh
-	for pt in Iterate2DGrid(width,depth, resolution[1], resolution[2]) do
+	for _, pt in gridIterator(width,depth, resolution.xres, resolution.yres) do
 		local s = pt[2][1];
 		local t = pt[2][2];
 --io.write('s: ',s,' t: ',t,'\n');
@@ -86,9 +107,9 @@ local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 		local offset = imaging.heightfield_getoffset(hmwidth,hmdepth, txcoord)
 --io.write('\nOffset: ', offset,'\n');
 		local height = heightmap[4][offset]
-		hscaled = height * scale;
+		local hscaled = height * scale;
 --io.write(height);
-		point = {pt[1][1], pt[1][2], hscaled};
+		local point = {pt[1][1], pt[1][2], hscaled};
 		table.insert(polypoints, point);
 	end
 

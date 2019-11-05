@@ -1,2 +1,0 @@
-polyhedron(points=
-[
