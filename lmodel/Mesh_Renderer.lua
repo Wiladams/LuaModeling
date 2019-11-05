@@ -1,3 +1,5 @@
+
+local oscad = require("lmodel.openscad_print")
 local imaging = require "lmodel.imaging"
 require "lmodel.openscad_print"
 
@@ -74,9 +76,9 @@ local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 	end
 
 	-- Write the polyhedron out to a file
-	local f = assert(io.open("GetHeightMesh.scad", 'w'));
+	local f = assert(io.open("output/GetHeightMesh.scad", 'w'));
 
-	polyhedron_print(f, polypoints, xcount, ycount);
+	oscad.polyhedron_print(f, polypoints, xcount, ycount);
 	f:close();
 end
 exports.PrintHeightMesh = PrintHeightMesh

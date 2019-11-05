@@ -4,6 +4,13 @@
 -- September 2011
 --=====================================
 
+local min = math.min
+local max = math.max
+local floor = math.floor
+local ceil = math.ceil
+local rad = math.rad
+local deg = math.deg
+
 --[[
 	glsl is the pipeline programming language for OpenGL
 	The language contains various math functions that have
