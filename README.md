@@ -32,12 +32,31 @@ directly from the mesh as well.  That makes it perfect for generating files for
 
 Examples
 ========
-testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh
+testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
 ![supershape](images/heightmap.PNG?raw=true)
 
-testy/test_cone.lua  An example of a simple cone
-![supershape](images/cone.PNG?raw=true)
+testy/test_cone.lua  An example of a simple cone<br/>
+
+![supershape](images/cone.PNG?raw=true)<br/>
+```lua
+local cone = require("lmodel.cone")
+local oscad = require "lmodel.openscad_print"
+
+-- Create shape file
+local f = assert(io.open("output/test_cone.scad", 'w'));
+
+--  you can change these parameters to change
+-- the shape of the cone
+local c1 = cone {
+    anglesteps = 30;
+    baseradius = 50;
+    topradius = 0;
+    height=100
+}
+
+oscad.PolyMesh_print(f,c1:getMesh())
+```
 
 TODO
 ====
