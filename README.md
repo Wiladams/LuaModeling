@@ -36,6 +36,9 @@ testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh
 
 ![supershape](images/heightmap.PNG?raw=true)
 
+testy/test_cone.lua  An example of a simple cone
+![supershape](images/cone.PNG?raw=true)
+
 TODO
 ====
 * Remove more from global namespace

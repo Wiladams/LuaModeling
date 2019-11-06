@@ -258,8 +258,9 @@ exports.fract3 = fract3
 exports.max = math.max
 exports.min = math.min
 
+-- Essentially lerp
 local function mix(x, y, a)
-	return x*(1-a)+y*a;
+	return add(x,mul(sub(y,x),a))
 end
 exports.mix = mix
 
