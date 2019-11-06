@@ -82,7 +82,7 @@ local se = Ellipsoid {
 oscad.PolyMesh_print(f,se:getMesh())
 ```
 
-![supershape](images/torus.PNG?raw=true)<br/>
+![torus](images/toroid.PNG?raw=true)<br/>
 ```lua
 local oscad = require "lmodel.openscad_print"
 local glsl = require("lmodel.glsl")
@@ -93,6 +93,7 @@ local Torus = require("lmodel.torus")
 
 -- Create shape file
 local f = assert(io.open("output/test_torus.scad", 'w'));
+
 
 local shape = Torus {
     USteps = 60;
