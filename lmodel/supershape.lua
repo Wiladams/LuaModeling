@@ -1,59 +1,3 @@
-local PolyMesh = require ("lmodel.trimesh")
-local sqrt = math.sqrt
-local sin, cos = math.sin, math.cos
-
---[[
-=========================================
- SuperFormula evaluation
-=========================================
---]]
---local pi = 3.1415926535898
-local pi = math.pi
-
-
--- Calculate length of a vector
-function vlength(v)
-	return sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3])
-end
-
--- Turn polar back to cartesian
-function pocart(r0,r1, t1, p1)
-	return {r0*cos(t1)*r1*cos(p1),r0*sin(t1)*r1*cos(p1),r1*sin(p1)}
-end
-
--- Create an instance of the supershape data structure
-function supershape(m,n1,n2, n3, a, b)
-	return {m,n1,n2,n3,a,b}
-end
-
-function SSCos(shape, phi)
-	return math.pow( math.abs(math.cos(shape[1]*phi/4) / shape[5]), shape[3])
-end
-
-function SSSin(shape, phi)
-	return math.pow(math.abs(math.sin(shape[1]*phi/4) / shape[6]), shape[4])
-end
-
-function SSR(shape, phi)
-	return math.pow((SSCos(shape,phi) + SSSin(shape,phi)), 1/shape[2])
-end
-
---[[
-function _EvalSuperShape2D3(phi, r)
-	if math.abs(r) == 0 then
-		return {0,0,0}
-	else
-		return {1/r * math.cos(phi), 1/r*math.sin(phi),0}
-	end
-end
-
-function _EvalSuperShape2D2(phi, n1, t1, t2)
-	return _EvalSuperShape2D3(phi, t1, t2, r=pow(t1+t2, 1/n1));
-
-
-function EvalSuperShape2D(shape, phi) = _EvalSuperShape2D2(phi, shape[1], t1=SSCos(shape,phi), t2=SSSin(shape,phi));
---]]
-
 --[[
 
 	Module: RenderSuperShape()
@@ -66,13 +10,55 @@ function EvalSuperShape2D(shape, phi) = _EvalSuperShape2D2(phi, shape[1], t1=SSC
 		http://paulbourke.net/geometry/supershape3d/
 --]]
 
+
+local PolyMesh = require ("lmodel.trimesh")
+local sqrt, pow, abs = math.sqrt, math.pow, math.abs
+local sin, cos = math.sin, math.cos
+
+local exports = {}
+
+--[[
+=========================================
+ SuperFormula evaluation
+=========================================
+--]]
+--local pi = 3.1415926535898
+local pi = math.pi
+
+
+-- Calculate length of a vector
+local function vlength(v)
+	return sqrt(v[1]*v[1]+v[2]*v[2]+v[3]*v[3])
+end
+
+-- Turn polar back to cartesian
+local function pocart(r0,r1, t1, p1)
+	return {r0*cos(t1)*r1*cos(p1),r0*sin(t1)*r1*cos(p1),r1*sin(p1)}
+end
+
+local function SSCos(shape, phi)
+	return pow( abs(cos(shape.m*phi/4) / shape.a), shape.n2)
+end
+
+local function SSSin(shape, phi)
+	return pow(abs(sin(shape.m*phi/4) / shape.b), shape.n3)
+end
+
+local function SSR(shape, phi)
+	return pow((SSCos(shape,phi) + SSSin(shape,phi)), 1/shape.n1)
+end
+
+
+
+
+
 local function nozeros(v1,v2,v3,v4)
 	return v1 ~=0 and v2~=0 and v3~=0 and v3~=0
 end
 
 
 
-function RenderSuperShape(shape1, shape2,	phisteps, thetasteps)
+local function getMesh(shape1, shape2,	phisteps, thetasteps)
 
 	local mesh = PolyMesh:new()
 
@@ -101,12 +87,21 @@ function RenderSuperShape(shape1, shape2,	phisteps, thetasteps)
 
 				mesh:addface({pa, pd, pc})
 				mesh:addface({pa, pc, pb})
-
 			end
 		end
 	end
 
 	return mesh
 end
+exports.getMesh = getMesh
 
-return RenderSuperShape
+-- Create an instance of the supershape data structure
+-- simple helper to turn parameter list into 
+-- table of named parameters
+function supershape(m,n1,n2, n3, a, b)
+	return {m=m,n1=n1,n2=n2,n3=n3,a=a,b=b}
+end
+exports.supershape = supershape
+
+return exports
+

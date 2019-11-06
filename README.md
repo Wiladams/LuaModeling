@@ -1,7 +1,7 @@
 LuaModeling is a library of 3D modeling routines written using
 the Lua language.
 
-![supershape](images/supershape2.PNG?raw=true)
+![mascot](images/mascot.PNG?raw=true)
 
 There are a number of techniques I want to use in 3D modeling.  My primary tool 
 of choice is OpenSCAD.  I choose OpenSCAD because it's relatively easy to use from
@@ -34,11 +34,11 @@ Examples
 ========
 testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
-![supershape](images/heightmap.PNG?raw=true)
+![heightmap](images/heightmap.PNG?raw=true)
 
 testy/test_cone.lua  An example of a simple cone<br/>
 
-![supershape](images/cone.PNG?raw=true)<br/>
+![cone](images/cone.PNG?raw=true)<br/>
 ```lua
 local cone = require("lmodel.cone")
 local oscad = require "lmodel.openscad_print"

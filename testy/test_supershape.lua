@@ -4,26 +4,9 @@ local sshape = require ("lmodel.supershape")
 local oscad = require "lmodel.openscad_print"
 
 -- Create a supershape
-local f = assert(io.open("output/test_supershape.scad", 'w'));
+local f = assert(io.open("output/supershape.scad", 'w'));
 
+local shape1 = {m=6.0, n1=60, n2=55, n3=1000, a=1, b=1}
+local shape2 = {m=6, n1=250, n2=100, n3=100, a=1, b=1}
 
-
-	-- Sphere
-	-- scale([10,10,10])
---[[
-oscad.PolyMesh_print(f,RenderSuperShape(
-	supershape(0, 1, 1, 1, 1, 1),
-	supershape(0, 1, 1, 1, 1, 1),
-	32,
-	32))
---]]
-
-
-
-
-
-oscad.PolyMesh_print(f,RenderSuperShape(
-		supershape(9.0, -89.25, 0.41, -31.90, 1, 1),
-		supershape(4.0, 100, 1000, 1000, 1, 1),
-		64,
-		64))
+oscad.PolyMesh_print(f,sshape.getMesh(shape1, shape2, 64, 64))
