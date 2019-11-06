@@ -76,7 +76,7 @@ local se = Ellipsoid {
     XRadius = 60, 
     ZRadius = 10, 
     MaxTheta = radians(120), 
-    MaxPhi = radians(120),
+    MaxPhi = radians(180),
 }
 
 oscad.PolyMesh_print(f,se:getMesh())
