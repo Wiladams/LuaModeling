@@ -30,6 +30,12 @@ As well as generating polygon mesh objects for OpenSCAD, you can generate a .stl
 directly from the mesh as well.  That makes it perfect for generating files for 
 3D printing directly.
 
+Examples
+========
+testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh
+
+![supershape](images/heightmap.PNG?raw=true)
+
 TODO
 ====
 * Remove more from global namespace
