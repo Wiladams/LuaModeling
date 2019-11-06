@@ -22,13 +22,32 @@ to source files, and automatically re-renders.
 By doing things this way, you're free to experiment with modeling techniques
 using Lua as your language, which is much faster and more flexible than OpenSCAD.
 
-Usage
-=====
-Look at the various test cases for examples of what can be done.
+Installation
+============
+The easiest thing to do is drop the lmodel directory into wherever you lua is
+installed.  Once you do that, you can do something like the following:
 
-As well as generating polygon mesh objects for OpenSCAD, you can generate a .stl file
-directly from the mesh as well.  That makes it perfect for generating files for 
-3D printing directly.
+```lua
+local oscad = require "lmodel.openscad_print"
+local cone = require("lmodel.cone")
+
+local f = assert(io.open("output/test_cone.scad", 'w'));
+local c1 = cone {
+    anglesteps = 30;
+    baseradius = 50;
+    topradius = 0;
+    height=100
+}
+
+oscad.PolyMesh_print(f,c1:getMesh())
+```
+
+Once you create this program, you can simply use lua(JIT) to run the program from the command line.
+
+There is no single module in lmodel, rather there is a set of various tools.  The above shows a typical way of create some geometry (the cone), and having the mesh printed out to a OpenSCAD file
+as a polygon mesh.
+
+
 
 Examples
 ========
@@ -61,7 +80,8 @@ local c1 = cone {
 oscad.PolyMesh_print(f,c1:getMesh())
 ```
 
-![supershape](images/ellipsoid.PNG?raw=true)<br/>
+
+![supershape](images/ellipsoid.PNG?raw=true) - Creating a partial ellipsoid<br/>
 ```lua
 local oscad = require "lmodel.openscad_print"
 local glsl = require("lmodel.glsl")
@@ -85,7 +105,7 @@ local se = Ellipsoid {
 oscad.PolyMesh_print(f,se:getMesh())
 ```
 
-![torus](images/toroid.PNG?raw=true)<br/>
+![torus](images/toroid.PNG?raw=true) - Creating an open toroid<br/>
 ```lua
 local oscad = require "lmodel.openscad_print"
 local glsl = require("lmodel.glsl")
