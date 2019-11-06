@@ -32,6 +32,9 @@ directly from the mesh as well.  That makes it perfect for generating files for
 
 Examples
 ========
+There are a growing number of [examples](https://github.com/Wiladams/LuaModeling/tree/master/examples) you can explore.  Here are a few simple ones to get a feel for the kinds of things
+you can create.
+
 testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
 ![heightmap](images/heightmap.PNG?raw=true)
