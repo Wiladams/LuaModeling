@@ -21,7 +21,7 @@ local se = Ellipsoid {
     WSteps = 40,
     XRadius = 60, 
     ZRadius = 10, 
-    MaxTheta = radians(360), 
+    MaxTheta = radians(120), 
     MaxPhi = radians(180),
     --Thickness = 5,
 }

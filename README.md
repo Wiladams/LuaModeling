@@ -75,7 +75,7 @@ local se = Ellipsoid {
     WSteps = 10,
     XRadius = 60, 
     ZRadius = 10, 
-    MaxTheta = radians(360), 
+    MaxTheta = radians(120), 
     MaxPhi = radians(120),
 }
 
