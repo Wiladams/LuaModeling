@@ -1,4 +1,4 @@
-local PolyMesh = require ("lmodel.polymesh")
+local PolyMesh = require ("lmodel.trimesh")
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
 

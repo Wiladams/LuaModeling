@@ -1,6 +1,6 @@
--- polymesh.lua
+
 --[[
-	Representation of a polygon mesh
+	Representation of a triangle mesh
 ]]
 local glsl = require("lmodel.glsl")
 

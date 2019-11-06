@@ -46,7 +46,7 @@ local function getpolymesh(M, umult, mesh, usteps, wsteps)
 	end
 
 	--[[
-	-- construct the 'inner' polymesh
+	-- construct the 'inner' trimesh
 	local inner = {}
 	for i,v in ipairs(vertices) do
 		local innerpt = vec3_add(v, vec3_mults(v[2],thickness));
