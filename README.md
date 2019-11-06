@@ -82,7 +82,7 @@ local se = Ellipsoid {
 oscad.PolyMesh_print(f,se:getMesh())
 ```
 
-![supershape](images/ellipsoid.PNG?raw=true)<br/>
+![supershape](images/torus.PNG?raw=true)<br/>
 ```lua
 local oscad = require "lmodel.openscad_print"
 local glsl = require("lmodel.glsl")
@@ -118,5 +118,7 @@ TODO
 ====
 * Remove more from global namespace
 * Write more test cases
-* Fix any bugs
+* Fix bugs
 * Change objects to use named field instead of positions
+* Add more parametric shapes
+* add CSG operations
