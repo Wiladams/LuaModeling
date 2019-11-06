@@ -95,13 +95,11 @@ end
 exports.sub = sub
 
 local function mul(x,y)
-	if type(x)=="number" then -- swap params, just in case y is a vector
-		return apply2(function(x,y) return x * y end,y,x)
-	else
- 		return apply2(function(x,y) return x * y end,x,y)
-	end
+	return apply2(function(x,y) return x * y end,x,y)
 end
 exports.mul = mul
+
+
 
 local function div(x,y)
 	return apply2(function(x,y) return x / y end,x,y)
@@ -348,7 +346,7 @@ end
 exports.dot = dot
 
 local function length(v)
-	return sqrt(dot(v,v))
+	return math.sqrt(dot(v,v))
 end
 exports.length = length
 

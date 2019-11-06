@@ -58,6 +58,30 @@ local c1 = cone {
 oscad.PolyMesh_print(f,c1:getMesh())
 ```
 
+![supershape](images/ellipsoid.PNG?raw=true)<br/>
+```lua
+local oscad = require "lmodel.openscad_print"
+local glsl = require("lmodel.glsl")
+local degrees = glsl.degrees
+local radians = glsl.radians
+
+local Ellipsoid = require("lmodel.ellipsoid")
+
+-- Create shape file
+local f = assert(io.open("output/test_ellipsoid.scad", 'w'));
+
+local se = Ellipsoid {
+    USteps = 10,
+    WSteps = 10,
+    XRadius = 60, 
+    ZRadius = 10, 
+    MaxTheta = radians(360), 
+    MaxPhi = radians(120),
+}
+
+oscad.PolyMesh_print(f,se:getMesh())
+```
+
 TODO
 ====
 * Remove more from global namespace
