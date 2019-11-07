@@ -1,10 +1,22 @@
+-- BUGBUG
+-- most of these routines can be replaced by 
+-- equivalents from glsl
+
 -- Useful constants
-Cphi = 1.618
+local Cphi = 1.618
 local Cpi = math.pi
 local Ctau = Cpi*2
 local Cepsilon = 0.00000001;
 
 Cdegtorad = 2*Cpi/360;
+
+local exports = {
+	Cphi = Cphi;
+	Cpi = math.pi;
+	Ctau = math.pi*2;
+	Cepsilon = Cepsilon
+}
+
 
 -- Basic vector routines
 -- Conversions
@@ -17,6 +29,7 @@ function vec3_from_point3h(pt)
 end
 
 -- Vector addition
+--[[
 function vec2_add(v1, v2)
 	return {v1[1]+v2[1], v1[2]+v2[2]}
 end
@@ -24,6 +37,7 @@ end
 function vec3_add(v1, v2)
 	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3]}
 end
+--]]
 
 function vec4_add(v1, v2)
 	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3], v1[4]+v2[4]}
@@ -611,6 +625,8 @@ end
 	will return '0' whenever there is a division by zero.  Although this will
 	mask some erroneous division by zero errors, it is often the case
 	that you actually want this behavior.  So, it makes it convenient.
+
+	BUGBUG - a better approach would be to return math.inf instead
 --]]
 function safediv(n,d)
 	if (d==0) then
@@ -619,3 +635,6 @@ function safediv(n,d)
 
 	return n/d;
 end
+
+
+return exports

@@ -19,6 +19,8 @@ needs to be converted
 //==========================================
 --]]
 
+local maths = require('lmodel.maths')
+
 local function poly_sum_interior_angles(sides)
 	return (sides-2)*180;
 end 
@@ -56,7 +58,7 @@ function icosa_class1(c) = octa_class1(
 	[
 		c[0]*sin(72),
 		c[1]+c[0]*cos(72),
-		geo_freq(c)/2+c[2]/Cphi
+		geo_freq(c)/2+c[2]/maths.Cphi
 	]);
 
 function icosa_class2(c) = sph(
