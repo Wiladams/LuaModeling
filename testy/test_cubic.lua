@@ -23,11 +23,14 @@ local function test_cubic_vertices()
 
 	local points = {};
 
-	for v in IterateCubicVertices(cubic_bezier_M(), 1, cptsh, 10) do
+	for v in IterateCubicVertices(cubic_bezier_M(), 1, cptsh, 30) do
 		table.insert(points,v);
 	end
 
-	oscad.polygon_print(points);
+	local f = assert(io.open("output/test_cubic_output.scad", 'w'));
+
+	oscad.polygon_fprint(f, points);
+	f:close();
 end
 
 

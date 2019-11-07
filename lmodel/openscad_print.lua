@@ -82,7 +82,7 @@ local function table_fprint_indices(f, a)
 	for i=1, #a do
 		f:write(i-1,',');
 	end
-	f:write(f, #a);
+	f:write(#a);
 	f:write("]\n");
 end
 
