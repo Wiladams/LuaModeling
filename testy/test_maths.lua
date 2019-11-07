@@ -2,8 +2,8 @@ package.path = "../?.lua;"..package.path
 
 local maths = require "lmodel.maths"
 local oscad = require "lmodel.openscad_print"
-
-print("Lua Maths")
+local glsl = require("lmodel.glsl")
+local tform = require("lmodel.transform")
 
 -- Declare functions before they are used
 function test_vector()
@@ -12,13 +12,13 @@ function test_vector()
 	print("Length: ", len)
 end
 
-function DemoTransforms()
+function test_transforms()
 	-- Just some simple transforms on a point
-	P = {3, 2, 1, 1};
-	T2 = {-1, -1, -1};
-	TM = transform_translate(T2);
-	RX  = transform_rotx(30);
-	RY = transform_roty(45);
+	local P = {3, 2, 1, 1};
+	local T2 = {-1, -1, -1};
+	local TM = tform.translate(T2);
+	local RX  = tform.rotx(30);
+	local RY = tform.roty(45);
 
 	print("P: ", P);
 	print("TM: ", TM);
@@ -26,15 +26,15 @@ function DemoTransforms()
 	print("RY: ", RY);
 
 	-- Combine the two rotations
-	RXY = mat4_mult_mat4(RX, RY);
+	local RXY = mat4_mult_mat4(RX, RY);
 	print("RXY: ", RXY);
 
 	-- Combine the two rotations and the translation
-	TRXY = mat4_mult_mat4(TM, RXY);
+	local TRXY = mat4_mult_mat4(TM, RXY);
 	print("TRXY: ", TRXY);
 
 	-- Apply the combined rotations and translation to transform the point
-	TPT = vec4_mult_mat4(P, TRXY);
+	local TPT = vec4_mult_mat4(P, TRXY);
 	print("TPT: ", TPT);
 end
 
@@ -53,19 +53,19 @@ function test_axis_rotate()
 
 	local cubectr = {3/2, 3/2, 3/2, 1};
 
-	local Tr = transform_translate({0, -cubectr[2], -cubectr[3]});
-	local Rx = transform_rotx(30);
-	local TrT = transform_translate({0, cubectr[2], cubectr[3]});
+	local Tr = tform.translate({0, -cubectr[2], -cubectr[3]});
+	local Rx = tform.rotx(30);
+	local TrT = tform.translate({0, cubectr[2], cubectr[3]});
 
 	print("Tr");
-	mat4_print(Tr);
+	oscad.mat4_print(Tr);
 
 	print("Rx");
-	mat4_print(Rx);
+	oscad.mat4_print(Rx);
 
 	local T = mat4_mult_mat4(mat4_mult_mat4(Tr, Rx), TrT);
 	print("T");
-	mat4_print(T);
+	oscad.mat4_print(T);
 
 	for coord in Iter_matm4_mult_mat4(cubepts, T) do
 		vec4_print(coord);io.write('\n');
@@ -73,12 +73,11 @@ function test_axis_rotate()
 end
 
 function test_clean()
-
-	print(clean(0.001))
+	print(maths.clean(0.001))
 end
 
 -- Call the test functions
---test_vector()
---DemoTransforms()
---test_axis_rotate();
+test_vector()
+test_transforms()
+test_axis_rotate();
 test_clean();

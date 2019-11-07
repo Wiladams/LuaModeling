@@ -56,7 +56,7 @@ local function mat4_print(m)
 	vec4_print(m[4]);io.write('\n');
 	print(']');
 end
-
+exports.mat4_print = mat4_print
 
 local function matx3_print(a)
 print("[");

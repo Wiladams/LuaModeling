@@ -1,22 +1,55 @@
--- BUGBUG
--- most of these routines can be replaced by 
--- equivalents from glsl
+-- BUGBUG - replace equivalents with glsl
+-- BUGBUG - separate the cubic curve stuff out
+-- BUGBUG - separate vector stuff out
+
+local glsl = require("lmodel.glsl")
+
+local radians = math.rad
+local cos, sin = math.cos, math.sin
 
 -- Useful constants
 local Cphi = 1.618
-local Cpi = math.pi
-local Ctau = Cpi*2
-local Cepsilon = 0.00000001;
 
-Cdegtorad = 2*Cpi/360;
+local Cepsilon = 0.00000001;
 
 local exports = {
 	Cphi = Cphi;
-	Cpi = math.pi;
-	Ctau = math.pi*2;
 	Cepsilon = Cepsilon
 }
 
+
+--[[
+ Function: clean
+
+ Parameters:
+	n - A number that might be very close to zero
+ Description:
+	There are times when you want a very small number to
+ 	just be zero, instead of being that very small number.
+	This function will compare the number to an arbitrarily small
+	number.  If it is smaller than the 'epsilon', then zero will be
+	 returned.  Otherwise, the original number will be returned.
+	 
+Perhaps this can simply be a  truncate, or round
+--]]
+
+local function clean(n, epsilon)
+	epsilon = epsilon or Cepsilon
+
+	if (n < 0) then
+		if (n < -epsilon) then
+			return n
+		else
+			return 0
+		end
+	else if (n < epsilon) then
+			return 0
+		else
+			return n
+		end
+	end
+end
+exports.clean = clean
 
 -- Basic vector routines
 -- Conversions
@@ -28,20 +61,12 @@ function vec3_from_point3h(pt)
 	return {pt[1], pt[2], pt[3]};
 end
 
--- Vector addition
+
 --[[
-function vec2_add(v1, v2)
-	return {v1[1]+v2[1], v1[2]+v2[2]}
-end
-
-function vec3_add(v1, v2)
-	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3]}
-end
---]]
-
 function vec4_add(v1, v2)
 	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3], v1[4]+v2[4]}
 end
+--]]
 
 -- Multiply by a scalar
 function vec2_mults(v, s)
@@ -70,14 +95,6 @@ function vec3_norm(v)
 	return vec3_mults(v, 1/vec3_length(v))
 end
 
--- Dot Product
-function vec3_dot(v1,v2)
-	return v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3]
-end
-
-function vec4_dot(v1,v2)
-	return v1[1]*v2[1]+v1[2]*v2[2]+v1[3]*v2[3]+v1[4]*v2[4]
-end
 
 
 function vec3_cross(v1, v2)
@@ -127,10 +144,10 @@ end
 
 function mat4_add_mat4(m1, m2)
 	return {
-	vec4_add(m1[1], m2[1]),
-	vec4_add(m1[2], m2[2]),
-	vec4_add(m1[3], m2[3]),
-	vec4_add(m1[4], m2[4])
+	glsl.add(m1[1], m2[1]),
+	glsl.add(m1[2], m2[2]),
+	glsl.add(m1[3], m2[3]),
+	glsl.add(m1[4], m2[4])
 	}
 end
 
@@ -141,25 +158,25 @@ end
 -- graphics system
 function mat4_mult_mat4(m1, m2)
 	return {
-	{vec4_dot(m1[1], mat4_col(m2,1)),
-	vec4_dot(m1[1], mat4_col(m2,2)),
-	vec4_dot(m1[1], mat4_col(m2,3)),
-	vec4_dot(m1[1], mat4_col(m2,4))},
+	{glsl.dot(m1[1], mat4_col(m2,1)),
+	glsl.dot(m1[1], mat4_col(m2,2)),
+	glsl.dot(m1[1], mat4_col(m2,3)),
+	glsl.dot(m1[1], mat4_col(m2,4))},
 
-	{vec4_dot(m1[2], mat4_col(m2,1)),
-	vec4_dot(m1[2], mat4_col(m2,2)),
-	vec4_dot(m1[2], mat4_col(m2,3)),
-	vec4_dot(m1[2], mat4_col(m2,4))},
+	{glsl.dot(m1[2], mat4_col(m2,1)),
+	glsl.dot(m1[2], mat4_col(m2,2)),
+	glsl.dot(m1[2], mat4_col(m2,3)),
+	glsl.dot(m1[2], mat4_col(m2,4))},
 
-	{vec4_dot(m1[3], mat4_col(m2,1)),
-	vec4_dot(m1[3], mat4_col(m2,2)),
-	vec4_dot(m1[3], mat4_col(m2,3)),
-	vec4_dot(m1[3], mat4_col(m2,4))},
+	{glsl.dot(m1[3], mat4_col(m2,1)),
+	glsl.dot(m1[3], mat4_col(m2,2)),
+	glsl.dot(m1[3], mat4_col(m2,3)),
+	glsl.dot(m1[3], mat4_col(m2,4))},
 
-	{vec4_dot(m1[4], mat4_col(m2,1)),
-	vec4_dot(m1[4], mat4_col(m2,2)),
-	vec4_dot(m1[4], mat4_col(m2,3)),
-	vec4_dot(m1[4], mat4_col(m2,4))},
+	{glsl.dot(m1[4], mat4_col(m2,1)),
+	glsl.dot(m1[4], mat4_col(m2,2)),
+	glsl.dot(m1[4], mat4_col(m2,3)),
+	glsl.dot(m1[4], mat4_col(m2,4))},
 	}
 end
 
@@ -187,96 +204,21 @@ end
 -- of a vec4 and a mat4
 function vec4_mult_mat4(vec, mat)
 	return {
-		vec4_dot(vec, mat4_col(mat,1)),
-		vec4_dot(vec, mat4_col(mat,2)),
-		vec4_dot(vec, mat4_col(mat,3)),
-		vec4_dot(vec, mat4_col(mat,4)),
+		glsl.dot(vec, mat4_col(mat,1)),
+		glsl.dot(vec, mat4_col(mat,2)),
+		glsl.dot(vec, mat4_col(mat,3)),
+		glsl.dot(vec, mat4_col(mat,4)),
 	}
 end
 
 
 function vec4_mult_mat34(vec, mat)
 	return {
-	vec4_dot(vec, mat4_col(mat,1)),
-	vec4_dot(vec, mat4_col(mat,2)),
-	vec4_dot(vec, mat4_col(mat,3))
+	glsl.dot(vec, mat4_col(mat,1)),
+	glsl.dot(vec, mat4_col(mat,2)),
+	glsl.dot(vec, mat4_col(mat,3))
 	}
 end
-
-
--- Linear Transformations
---	Translate
-function transform_translate(xyz)
-	return {
-	{1, 0, 0, 0},
-	{0, 1, 0, 0},
-	{0, 0, 1, 0},
-	{xyz[1], xyz[2], xyz[3], 1}
-	}
-end
-
--- 	Scale
-function  transform_scale(xyz)
-	return {
-	{xyz[1],0,0,0},
-	{0,xyz[2],0,0},
-	{0,0,xyz[3],0},
-	{0,0,0,1}
-	}
-end
-
---	Rotation
-function transform_rotx(deg)
-	local rad = Cdegtorad * deg;
-	local sinang = math.sin(rad);
-	local cosang = math.cos(rad);
-
-	return {
-	{1, 0, 0, 0},
-	{0, cosang, sinang, 0},
-	{0, -sinang, cosang, 0},
-	{0, 0, 0, 1}
-	}
-end
-
-function  transform_rotz(deg)
-	local rad = Cdegtorad * deg;
-	local sinang = math.sin(rad);
-	local cosang = math.cos(rad);
-
-	return {
-	{cosang, sinang, 0, 0},
-	{-sinang, cosang, 0, 0},
-	{0, 0, 1, 0},
-	{0, 0, 0, 1}
-	}
-end
-
-function  transform_roty(deg)
-	local rad = Cdegtorad * deg;
-	local sinang = math.sin(rad);
-	local cosang = math.cos(rad);
-
-	return {
-	{cosang, 0, -sinang, 0},
-	{0, 1, 0, 0},
-	{sinang, 0, cosang, 0},
-	{0, 0, 0, 1}
-	}
-end
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 --=======================================
 --
@@ -411,13 +353,13 @@ function bicerp(u, w, mesh, M, umult)
 
 	-- Get the normal vector by crossing the two tangent
 	-- vectors
-	local npt = vec3_norm(vec3_cross(
+	-- BUGBUG - maybe don't need to convert to vec3
+	local npt = vec3_norm(glsl.cross(
 				vec3_from_point3h(tupt),
 				vec3_from_point3h(twpt)));
 
-	--vec3_print(npt);io.write('\n');
-
-	-- return both the point, and the tangent
+	-- BUGBUG - maybe return the two tangents as well as the normal?
+	-- return both the point, and the normal
 	return {point = spt, normal = npt};
 end
 
@@ -581,37 +523,7 @@ function factorial(n)
 	end
 end
 
---[[
- Function: clean
 
- Parameters:
-	n - A number that might be very close to zero
- Description:
-	There are times when you want a very small number to
- 	just be zero, instead of being that very small number.
-	This function will compare the number to an arbitrarily small
-	number.  If it is smaller than the 'epsilon', then zero will be
-	 returned.  Otherwise, the original number will be returned.
-	 
-Perhaps this can simply be a  truncate, or round
---]]
-
-function clean(n, epsilon)
-	epsilon = epsilon or Cepsilon
-
-	if (n < 0) then
-		if (n < -epsilon) then
-			return n
-		else
-			return 0
-		end
-	else if (n < epsilon) then
-			return 0
-		else
-			return n
-		end
-	end
-end
 
 --[[
  Function: safediv
