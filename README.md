@@ -1,141 +1,83 @@
-LuaModeling is a library of 3D modeling routines written using
-the Lua language.
+# lmodel
 
 ![mascot](images/mascot.PNG?raw=true)
 
-There are a number of techniques I want to use in 3D modeling.  My primary tool 
-of choice is OpenSCAD.  I choose OpenSCAD because it's relatively easy to use from
-a programmer's perspective.  It does not have a very robust graphical interface
-for interacting with your models, rather it relies on code to do the modeling.
+What?
+=====
 
-I find OpenSCAD to be a bit limiting in the language itself, but it has a 
-polygon mesh object that it can render, so the approach taken in LuaModeling 
-is to use Lua as the modeling engine, and just output polygon mesh objects to 
-be rendered by OpenSCAD.
+With LuaModeling, you can create 3D geometries and output them to OpenSCAD .scad files, or .stl
 
-A good workflow is to create your models in LuaModeling, which will then 
-generate an OpenSCAD file.  Then, open this file using OpenSCAD, and keep 
-it open.  If you make changes to your original file, and generate the .scad 
-file again, it will be automatically rendered, because OpenSCAD tracks changes
-to source files, and automatically re-renders.
+I like OpenSCAD for its simplicity.  You can create fairly complex 3D models by writing
+code.  The OpenSCAD UI contains an editor and viewer, but the language itself is fairly constrained.
 
-By doing things this way, you're free to experiment with modeling techniques
-using Lua as your language, which is much faster and more flexible than OpenSCAD.
+LuaModeling recognizes that .scad and .stl files are fairly common, so it uses those
+formats as output.  The advantage of LuaModeling is using a very robust and fast language
+for creating the code for the 3D models.  Atop this, if you use LuaJIT, the code becomes even
+faster.
 
+What this essentially does is use Lua as the modeling language, and .scad and .stl as the 
+universal output format.  You are free to use any editor you like, such as VS Code, or Sublime Text.
+
+How
+===
 Installation
-============
-The easiest thing to do is drop the lmodel directory into wherever you lua is
-installed.  Once you do that, you can do something like the following:
+------------
+To install, simply copy the entirety of the lmodel directory into wherever your lua is
+installed.
+
+Workflow
+--------
+Starting from the end result, you need to decide whether you want to create a .stl, or a .scad file as your final output.  Assuming you want to generate .scad, and you want to use VS Code as your editor, you need to create your model file, which is nothing more than a '.lua' program.
+
 
 ```lua
 local oscad = require "lmodel.openscad_print"
-local cone = require("lmodel.cone")
+local f = assert(io.open("output/cone.scad", 'w'));
+```
 
-local f = assert(io.open("output/test_cone.scad", 'w'));
+Next, you load the modules that you'll be using to put your model together.  In this case, we
+can create a simple cone.
+
+```lua
+local cone = require("lmodel.cone")
 local c1 = cone {
     anglesteps = 30;
     baseradius = 50;
     topradius = 0;
     height=100
 }
+```
 
+
+Finally, you will want to generate the mesh, and write it to the output file.  In the case of OpenSCAD output, a triangle mesh is typically what you will output.  You can also output a flat 2D polygon if that's right for your geometry, but most of the time you're going to generate a full polyhedron.
+
+```lua
 oscad.PolyMesh_print(f,c1:getMesh())
 ```
 
-Once you create this program, you can simply use lua(JIT) to run the program from the command line.
 
-There is no single module in lmodel, rather there is a set of various tools.  The above shows a typical way of create some geometry (the cone), and having the mesh printed out to a OpenSCAD file
-as a polygon mesh.
+Now that you've got your .lua file, you simply execute it from the command line:
+
+```
+c:> luajit cone.lua
+```
+
+You will get a cone.scad file in the same directory.  From there, you can open the file using
+the OpenSCAD program, and your mesh should show up in the window.<br/>
+
+![cone](images/cone.PNG?raw=true)<br/>
+
+Once you open the file in OpenSCAD, you can simply leave OpenSCAD open to make iterative changes to the source .lua program.  Each time you execute the model's program, it will regenerate the .scad file, which will cause OpenSCAD to read it again and re-render your model. This makes for a fairly rapid turnaround because you're not relying on OpenSCAD to generate the actual mesh, which can be fairly slow.  You're just relying on it to render the mesh, which it can do fairly quickly.
 
 
 
-Examples
-========
+
+More Examples
+=============
 There are a growing number of [examples](https://github.com/Wiladams/LuaModeling/tree/master/examples) you can explore.  Here are a few simple ones to get a feel for the kinds of things
 you can create.
 
-testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
-![heightmap](images/heightmap.PNG?raw=true)
-
-testy/test_cone.lua  An example of a simple cone<br/>
-
-![cone](images/cone.PNG?raw=true)<br/>
-```lua
-local cone = require("lmodel.cone")
-local oscad = require "lmodel.openscad_print"
-
--- Create shape file
-local f = assert(io.open("output/test_cone.scad", 'w'));
-
---  you can change these parameters to change
--- the shape of the cone
-local c1 = cone {
-    anglesteps = 30;
-    baseradius = 50;
-    topradius = 0;
-    height=100
-}
-
-oscad.PolyMesh_print(f,c1:getMesh())
-```
-
-
-![supershape](images/ellipsoid.PNG?raw=true) - Creating a partial ellipsoid<br/>
-```lua
-local oscad = require "lmodel.openscad_print"
-local glsl = require("lmodel.glsl")
-local degrees = glsl.degrees
-local radians = glsl.radians
-
-local Ellipsoid = require("lmodel.ellipsoid")
-
--- Create shape file
-local f = assert(io.open("output/test_ellipsoid.scad", 'w'));
-
-local se = Ellipsoid {
-    USteps = 10,
-    WSteps = 10,
-    XRadius = 60, 
-    ZRadius = 10, 
-    MaxTheta = radians(120), 
-    MaxPhi = radians(180),
-}
-
-oscad.PolyMesh_print(f,se:getMesh())
-```
-
-![torus](images/toroid.PNG?raw=true) - Creating an open toroid<br/>
-```lua
-local oscad = require "lmodel.openscad_print"
-local glsl = require("lmodel.glsl")
-local degrees = glsl.degrees
-local radians = glsl.radians
-
-local Torus = require("lmodel.torus")
-
--- Create shape file
-local f = assert(io.open("output/test_torus.scad", 'w'));
-
-
-local shape = Torus {
-    USteps = 60;
-    WSteps = 60;
-    HoleRadius = 10;
-	ProfileRadius =  5;
-	--ProfileSampler = obj.ProfileSampler
-
-    -- change the amount of cross section
-    MinTheta = 0;
-    MaxTheta = radians(270);
-
-    -- change the amount around the donut
-    MinPhi = 10;
-    MaxPhi = radians(320);
-}
-
-oscad.PolyMesh_print(f,shape:getMesh())
-```
 
 
 TODO
