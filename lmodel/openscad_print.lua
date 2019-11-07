@@ -22,9 +22,12 @@ local function fprintf(f, fmt, ...)
 	f:write(format(fmt, ...))
 end
 
+function vec2_fwrite(f, v)
+	return fwrite(f, '[', v[1],',',v[2],']');
+end
 
-function vec2_print(v)
-	write('[', v[1],',',v[2],']');
+function vec2_write(v)
+	return vec2_fwrite(io.stdout, v)
 end
 
 function vec3_fwrite(f, v)
@@ -74,28 +77,35 @@ print("[");
 	print("]");
 end
 
-local function table_print_indices(a)
-	print("[");
+local function table_fprint_indices(f, a)
+	fwrite(f, "[\n");
 	for i=1, #a do
-		io.write(i-1,',');
+		f:write(i-1,',');
 	end
-	io.write(#a);
-	print("]");
-
+	f:write(f, #a);
+	f:write("]\n");
 end
 
+local function table_print_indices(a)
+    return table_fprint_indices(io.stdout, a)
+end
+
+local function polygon_fprint(f, a)
+	fprintf(f, "polygon(points=\n");
+	fprintf(f, "[");
+	for i=1,#a  do
+		vec2_fwrite(f, a[i]);
+		fwrite(f, ",\n");
+	end
+	fprintf(f, "],\n");
+	fprintf(f, "paths=[\n");
+	table_fprint_indices(f, a);
+	fprintf(f, "]);\n");
+end
+exports.polygon_fprint = polygon_fprint
 
 local function polygon_print(a)
-	print("polygon(points=");
-	print("[");
-	for i=1,#a  do
-		vec2_print(a[i]);
-		io.write(",\n");
-	end
-	print("],");
-	print("paths=[");
-	table_print_indices(a);
-	print("]);");
+	return polygon_fprint(io.stdout, a)
 end
 exports.polygon_print = polygon_print
 
@@ -119,7 +129,7 @@ local function quad_indices_from_polymesh(width, height)
 	return indices;
 end
 
-local function polyhedron_print(f, pts, width, height)
+local function polyhedron_fprint(f, pts, width, height)
 
 	f:write("polyhedron(points=\n");
 	f:write("[\n");
@@ -137,8 +147,12 @@ local function polyhedron_print(f, pts, width, height)
 	end
 	f:write("]);\n");
 end
-exports.polyhedron_print = polyhedron_print
+exports.polyhedron_fprint = polyhedron_fprint
 
+local function polyhedron_print(pts, width, height)
+	return polyhedron_fprint(io.stdout, pts, width, height)
+end
+exports.polyhedron_print = polyhedron_print
 
 local function GetBiCubicVertices(M, umult, cps, steps)
 

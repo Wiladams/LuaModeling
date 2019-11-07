@@ -79,7 +79,7 @@ local function PrintHeightMesh(width, depth, resolution, scale, heightmap)
 	-- Write the polyhedron out to a file
 	local f = assert(io.open("output/GetHeightMesh.scad", 'w'));
 
-	oscad.polyhedron_print(f, polypoints, xcount, ycount);
+	oscad.polyhedron_fprint(f, polypoints, xcount, ycount);
 	f:close();
 end
 exports.PrintHeightMesh = PrintHeightMesh
