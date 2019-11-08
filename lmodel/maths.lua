@@ -488,24 +488,27 @@ end
 exports.sph_to_cart = sph_to_cart
 
 -- Convert from cartesian to spherical
-function sph_from_cart(c)
+local function sph_from_cart(c)
 	return sph(
 	math.atan2(c[2],c[1]),
 	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
 	math.sqrt(c[1]*c[1]+c[2]*c[2]+c[3]*c[3])
 	)
 end
+exports.sph_from_cart = sph_from_cart
 
-function sphu_from_cart(c, rad)
+local function sphu_from_cart(c, rad)
 	return sph(
 	math.atan2(c[2],c[1]),
 	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
 	rad
 	)
 end
+exports.sphu_from_cart = sphu_from_cart
+
 
 -- compute the chord distance between two points on a sphere
-function sph_dist(c1, c2)
+local function sph_dist(c1, c2)
 	return math.sqrt(
 	c1[3]*c1[3] + c2[3]*c2[3] -
 	2*c1[3]*c2[3]*
