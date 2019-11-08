@@ -91,10 +91,10 @@ function vec3_length(v)
 	return math.sqrt(vec3_lengthsquared(v))
 end
 
-function vec3_norm(v)
-	return vec3_mults(v, 1/vec3_length(v))
+local function vec3_norm(v)
+	return glsl.mul(v, 1/glsl.length(v))
 end
-
+exports.vec3_norm = vec3_norm
 
 
 function vec3_cross(v1, v2)
@@ -472,18 +472,20 @@ end
  lat - latitude, starting at 0 == 'north pole'
  rad - distance from center
 --]]
-function sph(long, lat, rad)
+local function sph(long, lat, rad)
 	return {long, lat, rad}
 end
+exports.sph = sph
 
 -- Convert spherical to cartesian
-function sph_to_cart(s)
+local function sph_to_cart(s)
 	return {
 	clean(s[3]*sin(s[2])*cos(s[1])),
 	clean(s[3]*sin(s[2])*sin(s[1])),
 	clean(s[3]*cos(s[2]))
 	}
 end
+exports.sph_to_cart = sph_to_cart
 
 -- Convert from cartesian to spherical
 function sph_from_cart(c)
@@ -515,7 +517,28 @@ end
 
 
 -- Useful functions
-function factorial(n)
+-- Calculate the centroid of a list of vertices
+
+local function centroid(verts)
+	local minx = math.huge; maxx = -math.huge
+	local miny = math.huge; maxy = -math.huge
+	local minz = math.huge; maxz = -math.huge
+
+	for _,v in ipairs(verts) do
+		minx = math.min(v[1], minx); maxx = math.max(v[1], maxx);
+		miny = math.min(v[2], miny); maxy = math.max(v[2], maxy);
+		minz = math.min(v[3], minz); maxz = math.max(v[3], maxz);
+	end
+
+	local x = minx + (maxx-minx)/2;
+	local y = miny + (maxy-miny)/2;
+	local z = minz + (maxz-minz)/2;
+
+	return {x,y,z}
+end
+exports.centroid = centroid
+
+local function factorial(n)
 	if n==0 then
 		return 1
 	else
@@ -540,7 +563,7 @@ end
 
 	BUGBUG - a better approach would be to return math.inf instead
 --]]
-function safediv(n,d)
+local function safediv(n,d)
 	if (d==0) then
 		return 0
 	end

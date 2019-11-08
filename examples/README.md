@@ -1,6 +1,35 @@
 Some examples.  Look at the various codes within this directory.  Bring up a command line and execute the files directly using your lua interpreter.
 
 
+![metaball](images/metaball.PNG?raw=true) - metaball with 3 ball influence<br/>
+```lua
+package.path = "../?.lua;"..package.path
+
+local oscad = require "lmodel.openscad_print"
+local glsl = require("lmodel.glsl")
+local metaball = require("lmodel.metaball")
+
+-- Create shape file
+local f = assert(io.open("output/metaball.scad", 'w'));
+
+-- each ball specified a center, and a radius
+local balls = {
+    {15, 15, 0, 5}, 
+    {30, 15, 0, 5}, 
+    {20, 40, 0, 5}}
+
+local s = metaball:new({
+    USteps = 60;    -- steps around latitude
+    WSteps = 30;    -- steps around longitude
+    balls = balls;
+})
+
+oscad.PolyMesh_print(f,s:getMesh())
+
+f:close()
+```
+
+
 testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
 ![heightmap](images/heightmap.PNG?raw=true)
@@ -83,3 +112,4 @@ local shape = Torus {
 
 oscad.PolyMesh_print(f,shape:getMesh())
 ```
+

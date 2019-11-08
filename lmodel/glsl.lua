@@ -253,6 +253,7 @@ local function fract3(x)
 end
 exports.fract3 = fract3
 
+
 exports.max = math.max
 exports.min = math.min
 
