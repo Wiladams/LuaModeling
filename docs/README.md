@@ -1,7 +1,7 @@
 # Documentation
 
 Core Design Ideas
-* trimesh
+* [trimesh](trimesh.md)
 * openscad_print
 * STLWriter
 * MeshRenderer
