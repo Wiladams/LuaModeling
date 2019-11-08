@@ -1,7 +1,7 @@
 Some examples.  Look at the various codes within this directory.  Bring up a command line and execute the files directly using your lua interpreter.  You will see a '.scad' file in the output directory.  Open that up with OpenSCAD and view the thing in question.  You can leave the OpenSCAD program open, play with parameters in the '.lua' file, rerun the program, and the OpenSCAD view will automatically change.<br/>
 
-
-examples/ex_metaball - metaball with 3 ball influence<br/>
+=====
+examples/ex_metaball.lua - metaball with 3 ball influence<br/>
 ![metaball](images/metaball.PNG?raw=true)
 
 ```lua
@@ -31,7 +31,7 @@ oscad.PolyMesh_print(f,s:getMesh())
 f:close()
 ```
 
-
+=====
 examples/ex_cone.lua  An example of a simple cone<br/>
 ![cone](images/cone.PNG?raw=true)<br/>
 
@@ -54,8 +54,8 @@ local c1 = cone {
 oscad.PolyMesh_print(f,c1:getMesh())
 ```
 
-
-examples/ex_ellipsoid - Creating a partial ellipsoid<br/>
+=====
+examples/ex_ellipsoid.lua - Creating a partial ellipsoid<br/>
 
 ![supershape](images/ellipsoid.PNG?raw=true)
 
@@ -82,7 +82,8 @@ local se = Ellipsoid {
 oscad.PolyMesh_print(f,se:getMesh())
 ```
 
-Creating an open toroid<br/>
+=====
+examples\ex_torus.lua - Creating an open toroid<br/>
 ![torus](images/toroid.PNG?raw=true)
 
 ```lua
@@ -116,6 +117,7 @@ local shape = Torus {
 oscad.PolyMesh_print(f,shape:getMesh())
 ```
 
+=====
 testy/test_mesh_lofting.lua  An example of attaching a height map to a mesh<br/>
 
 ![heightmap](images/heightmap.PNG?raw=true)
