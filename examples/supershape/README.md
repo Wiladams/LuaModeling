@@ -12,3 +12,8 @@ starfish, snail shells, and the like.
 
 Experimentation is your friend here.  Read the Paul Bourke material
 and try out various things.
+
+# Platonic Solids
+
+The 5 shapes that define the universe
+[Platonic Solids](https://github.com/Wiladams/LuaModeling/tree/master/examples/platonics)
