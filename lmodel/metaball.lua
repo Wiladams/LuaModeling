@@ -8,6 +8,9 @@ local BiParametric = require("lmodel.biparametric")
 local maths = require ("lmodel.maths")
 local glsl = require("lmodel.glsl")
 
+local spherical = require("lmodel.spherical")
+local sph_to_cart = spherical.sph_to_cart
+
 local Cepsilon = 0.00000001;    -- a very small value
 local PI = math.pi
 
@@ -120,7 +123,7 @@ function Metaball.beamsearch(self, longitude, latitude, high, low)
 	local midpoint = low + (high-low)/2
 
 	-- start with the midpoint
-	local xyz = glsl.add(self.atcenter, maths.sph_to_cart({longitude, latitude, midpoint}))
+	local xyz = glsl.add(self.atcenter, spherical.sph_to_cart({longitude, latitude, midpoint}))
 	local sum = SumInfluence(xyz, self.balls, self.Influencer);
 
 	-- We're right within the threshold, so return the point

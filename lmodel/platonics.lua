@@ -7,8 +7,8 @@ local maths = require("lmodel.maths")
 local glsl = require("lmodel.glsl")
 local TriangleMesh = require("lmodel.trimesh")
 
-local sph_to_cart = maths.sph_to_cart
-local sphu_from_cart = maths.sphu_from_cart
+local sph_to_cart = spherical.sph_to_cart
+local sphu_from_cart = spherical.sphu_from_cart
 
 local Cphi = maths.Cphi
 

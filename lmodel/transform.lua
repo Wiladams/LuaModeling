@@ -1,4 +1,5 @@
 local radians, degrees = math.rad, math.deg
+local sin, cos = math.sin, math.cos
 
 local exports = {}
 
@@ -40,6 +41,20 @@ function transform_rotx(deg)
 end
 exports.rotx = transform_rotx
 
+function  transform_roty(deg)
+	local rad = radians(deg);
+	local sinang = math.sin(rad);
+	local cosang = math.cos(rad);
+
+	return {
+	{cosang, 0, -sinang, 0},
+	{0, 1, 0, 0},
+	{sinang, 0, cosang, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.roty = transform_roty
+
 function  transform_rotz(deg)
 	local rad = radians(deg);
 	local sinang = math.sin(rad);
@@ -54,19 +69,7 @@ function  transform_rotz(deg)
 end
 exports.rotz = transform_rotz
 
-function  transform_roty(deg)
-	local rad = radians(deg);
-	local sinang = math.sin(rad);
-	local cosang = math.cos(rad);
 
-	return {
-	{cosang, 0, -sinang, 0},
-	{0, 1, 0, 0},
-	{sinang, 0, cosang, 0},
-	{0, 0, 0, 1}
-	}
-end
-exports.roty = transform_roty
 
 return exports
 

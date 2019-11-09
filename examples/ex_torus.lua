@@ -25,6 +25,8 @@ local shape = Torus {
     -- change the amount around the donut
     MinPhi = 10;
     MaxPhi = radians(320);
+
+    --Thickness = -3;
 }
 
 
