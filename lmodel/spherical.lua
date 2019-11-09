@@ -1,13 +1,15 @@
 
-local sqrt = math.sqrt
-local sin, cos = math.sin, math.cos
-local atan2 = math.atan2
+
 
 --[[
 ==================================
   Spherical coordinates
 ==================================
 --]]
+local sqrt = math.sqrt
+local sin, cos = math.sin, math.cos
+local atan2 = math.atan2
+
 local exports = {}
 
 --[[
