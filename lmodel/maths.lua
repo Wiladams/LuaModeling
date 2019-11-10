@@ -86,15 +86,6 @@ end
 exports.vec3_norm = vec3_norm
 
 
-function vec3_cross(v1, v2)
-	return {
-		(v1[2]*v2[3])-(v2[2]*v1[3]),
-		(v1[3]*v2[1])-(v2[3]*v1[1]),
-		(v1[1]*v2[2])-(v2[1]*v1[2])
-	}
-end
-
-
 --=========================================
 --	Matrix 4X4 Operations
 --
@@ -104,7 +95,7 @@ end
 -- Lower right 1x1 == overall scaling
 --=========================================
 
-function mat4_identity()
+local function mat4_identity()
 	return {
 	{1, 0, 0, 0},
 	{0, 1, 0, 0},
@@ -112,8 +103,10 @@ function mat4_identity()
 	{0, 0, 0, 1}
 	}
 end
+exports.mat4_identity = mat4_identity
 
-function mat4_transpose(m)
+
+local function mat4_transpose(m)
 	return {
 	mat4_col(m,0),
 	mat4_col(m,1),
@@ -122,7 +115,7 @@ function mat4_transpose(m)
 	}
 end
 
-function mat4_col(m, col)
+local function mat4_col(m, col)
 	return {
 	m[1][col],
 	m[2][col],
@@ -131,7 +124,7 @@ function mat4_col(m, col)
 	}
 end
 
-function mat4_add_mat4(m1, m2)
+local function mat4_add_mat4(m1, m2)
 	return {
 	glsl.add(m1[1], m2[1]),
 	glsl.add(m1[2], m2[2]),
@@ -140,7 +133,28 @@ function mat4_add_mat4(m1, m2)
 	}
 end
 
+-- Linear Transformations
+--	Translate
+function mat4_translation(x, y, z)
+	return {
+	{1, 0, 0, 0},
+	{0, 1, 0, 0},
+	{0, 0, 1, 0},
+	{x, y, z, 1}
+	}
+end
+exports.translation = mat4_translation
 
+-- 	Scale
+local function  mat4_scale(sx,sy,sz)
+	return {
+	{sx,0,0,0},
+	{0,sy,0,0},
+	{0,0,sz,0},
+	{0,0,0,1}
+	}
+end
+exports.mat4_scale = mat4_scale
 
 -- Multiply two 4x4 matrices together
 -- This is one of the workhorse mechanisms of the
@@ -195,7 +209,7 @@ function Iter_matm4_mult_mat4(m4, Tm)
 	return function()
 		row = row+1;
 		if row > #m4 then	-- If we've run out of rows
-			return nil;	-- we are done
+			return nil;		-- we are done
 		else
 			return vec4_mult_mat4(m4[row], Tm);
 		end

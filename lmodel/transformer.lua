@@ -1,30 +1,41 @@
+
 local radians, degrees = math.rad, math.deg
 local sin, cos = math.sin, math.cos
+local maths = require("lmodel.maths")
 
-local exports = {}
+--[[
+	Perform transformations in 3D space
+	identity
+	translate
+	scale
+	rotate (x, y, z)
+]]
+local Transformer = {}
+local Transformer_mt = {
+	__index = Transformer;
+}
 
--- Linear Transformations
---	Translate
-function transform_translate(xyz)
-	return {
-	{1, 0, 0, 0},
-	{0, 1, 0, 0},
-	{0, 0, 1, 0},
-	{xyz[1], xyz[2], xyz[3], 1}
+function Transformer.new(self, obj)
+	-- start with identity transform if none specified
+	obj = obj or {
+		CurrentTransform = maths.mat4_identity();
 	}
-end
-exports.translate = transform_translate
+	
+	obj.CurrentTransform = obj.CurrentTransform or maths.mat4_identity();
+	
+	setmetatable(obj, Transformer_mt)
 
--- 	Scale
-function  transform_scale(xyz)
-	return {
-	{xyz[1],0,0,0},
-	{0,xyz[2],0,0},
-	{0,0,xyz[3],0},
-	{0,0,0,1}
-	}
+	return obj
 end
-exports.scale = transform_scale
+
+function Transformer.transformCoordinates(self, x, y, z)
+	return vec4_mult_mat4({x,y,z,1}, self.CurrentTransform)
+end
+
+
+
+
+
 
 --	Rotation
 function transform_rotx(deg)
@@ -71,5 +82,5 @@ exports.rotz = transform_rotz
 
 
 
-return exports
+return Transformer
 
