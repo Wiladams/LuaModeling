@@ -5,6 +5,27 @@ local oscad = require "lmodel.openscad_print"
 local glsl = require("lmodel.glsl")
 local tform = require("lmodel.transform")
 
+
+--
+-- Function: Iter_matm4_mult_mat4
+--
+-- Description: Given a matrix of homogenized input
+--	points, multiply then by the transform matrix, and
+--	return them one by one as an iterator.
+function Iter_matm4_mult_mat4(m4, Tm)
+	local row=0;
+
+	return function()
+		row = row+1;
+		if row > #m4 then	-- If we've run out of rows
+			return nil;		-- we are done
+		else
+			return vec4_mult_mat4(m4[row], Tm);
+		end
+	end
+end
+
+
 -- Declare functions before they are used
 function test_vector()
 	len = glsl.length({0,10,0})
