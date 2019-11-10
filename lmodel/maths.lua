@@ -450,20 +450,6 @@ function herpm(u, v, mesh)
 end
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- Useful functions
 -- Calculate the centroid of a list of vertices
 

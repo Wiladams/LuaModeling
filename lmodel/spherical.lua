@@ -9,29 +9,12 @@
 local sqrt = math.sqrt
 local sin, cos = math.sin, math.cos
 local atan2 = math.atan2
+local maths = require("lmodel.maths")
+local clean = maths.clean
 
+
+-- Utility functions
 local exports = {}
-
---[[
- create an instance of a spherical coordinate
- long - rotation around z -axis
- lat - latitude, starting at 0 == 'north pole'
- rad - distance from center
---]]
-local function sph(long, lat, rad)
-	return {long, lat, rad}
-end
-exports.sph = sph
-
--- Convert spherical to cartesian
-local function sph_to_cart(s)
-	return {
-	clean(s[3]*sin(s[2])*cos(s[1])),
-	clean(s[3]*sin(s[2])*sin(s[1])),
-	clean(s[3]*cos(s[2]))
-	}
-end
-exports.sph_to_cart = sph_to_cart
 
 -- Convert from cartesian to spherical
 local function sph_from_cart(c)
@@ -42,6 +25,16 @@ local function sph_from_cart(c)
 	)
 end
 exports.sph_from_cart = sph_from_cart
+
+-- Convert spherical to cartesian
+local function sph_to_cart(s)
+	return {
+	clean(s[3]*sin(s[2])*cos(s[1])),
+	clean(s[3]*sin(s[2])*sin(s[1])),
+	clean(s[3]*cos(s[2]))
+	}
+end
+exports.sph_to_cart = sph_to_cart
 
 local function sphu_from_cart(c, rad)
 	return sph(
@@ -63,5 +56,75 @@ local function sph_dist(c1, c2)
 	);
 end
 exports.sph_dist = sph_dist
+
+
+local Spherical = {}
+setmetatable(Spherical, {
+	__call = function(self, ...)
+		return self:new(...)
+	end;
+})
+local Spherical_mt = {
+	__index = Spherical
+}
+
+--[[
+	Spherical - A class for handling spherical coordinates
+
+ Spherical coordinates are defined as
+ 	longitude 	- rotation around z -axis		[0..2pi]
+ 	latitude 	- latitude, 0 == 'north pole' 	[0..pi]
+ 	radius 		- distance from center			[number]
+--]]
+local function Spherical.new(self, obj)
+	local obj = obj or {
+		longitude = 0;
+		latitude = math.pi/2;
+		radius = 1;
+	}
+
+	obj.radius = obj.radius or 1
+	obj.latitude = obj.latitude or math.pi
+	obj.longitude = obj.longitude or 0
+
+	setmetatable(obj, Spherical_mt)
+
+	return obj
+end
+
+--[[
+	construct with x, y, z
+]]
+function Spherical.createFromCartesian(self, ...)
+	local nargs = select('#', ...)
+	local params
+
+	if nargs == 3 then
+		local x = select(1, ...)
+		local y = select(2, ...)
+		local z = select(3, ...)
+
+		params = {
+			atan2(y,x),
+			atan2(sqrt(x*x+y*y), z),
+			sqrt(x*x+y*y+z*z)
+		}
+	end
+
+	return Spherical:new(params)
+end
+
+--[[
+	Turn spherical coordinates into cartesian
+	return a tuple of {x,y,z}
+]]
+function Spherical.toCartesian(self)
+	return {
+		clean(self.radius*sin(self.latitude)*cos(self.longitude)),
+		clean(self.radius*sin(self.latitude)*sin(self.longitude)),
+		clean(self.radius*cos(self.latitude))
+		}
+end
+
 
 return exports
