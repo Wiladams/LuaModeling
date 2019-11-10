@@ -109,15 +109,6 @@ local function cerp(U, M, G)
 end
 exports.cerp = cerp
 
-local function cubic_surface_pt(T, A, G, S)
-	local pt = vec3_from_point3h(
-		vec4_mult_mat4(vec4_mult_mat4(vec4_mult_mat4(T,A), G),S)
-	);
-	return pt;
-end
-
-
-
 
 --=====================================================
 -- Function: bicerp
@@ -154,7 +145,6 @@ local function bicerp(u, w, mesh, M, umult)
 	local wPt3 = cerp(U, M, mesh_col(mesh, 3));
 	local wPt4 = cerp(U, M, mesh_col(mesh, 4));
 
-
 	-- Calculate the surface pt
 	local spt = cerp(W, M,{uPt1, uPt2, uPt3, uPt4});
 
@@ -165,10 +155,7 @@ local function bicerp(u, w, mesh, M, umult)
 
 	-- Get the normal vector by crossing the two tangent
 	-- vectors
-	-- BUGBUG - maybe don't need to convert to vec3
-	local npt = vec3_norm(glsl.cross(
-				vec3_from_point3h(tupt),
-				vec3_from_point3h(twpt)));
+	local npt = vec3_norm(glsl.cross(tupt, twpt));
 
 	-- BUGBUG - maybe return the two tangents as well as the normal?
 	-- return both the point, and the normal
@@ -177,11 +164,17 @@ end
 exports.bicerp = bicerp
 
 
+--[[
+	Specific curve evaluators
+]]
 local function catmull_eval(u, mult, geom4)
 	return cerp(cubic_U(u, mult), CatmullRom_M, geom4)
 end
 exports.catmull_eval = catmull_eval
 
+local function catmullm(u,v, mesh)
+	return bicerp(u, v, CatmullRom_M, vec43_to_vec44(mesh));
+end
 
 --=======================================
 --
@@ -199,6 +192,10 @@ end
 
 -- Calculate a point on a Bezier mesh
 -- Given the mesh, and the parametric 'u', and 'v' values
+-- BUGBUG - it is expensive to convert the geometry 
+-- each time we make this call, so either assume the geometry
+-- is already in the right format, or tag it in some way so 
+-- it doesn't have to happen again.
 local function berpm(u,v, mesh)
 	return bicerp(u, v, Bezier_M, vec43_to_vec44(mesh));
 end
@@ -209,7 +206,6 @@ end
 --		Hermite Convenience Routines
 --
 --=======================================
-
 local function herp(u, cps)
 	return ccerp(cubic_U(u), Hermite_M, cubic_vec3_to_cubic_vec4(cps))
 end

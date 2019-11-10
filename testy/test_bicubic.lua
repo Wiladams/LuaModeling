@@ -28,8 +28,8 @@ local function test_bicubic_vertices()
 	local gcp2 = {{5,10,10,1}, {10,10,20,1}, {15,5,15,1}, {20,10,5,1}};
 	local gcp1 = {{0,0,0,1}, {10,-10,0,1}, {20,-10,0,1}, {30,0,0,1}};
 
-	local usteps = 24;
-	local wsteps = 24;
+	local usteps = 16;
+	local wsteps = 8;
 
 	local polypoints = getpolymesh(cubics.Bezier_M, 1,
 			{gcp1, gcp2, gcp3, gcp4}, usteps, wsteps);
