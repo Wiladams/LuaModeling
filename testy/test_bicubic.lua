@@ -2,6 +2,7 @@ package.path = "../?.lua;"..package.path
 
 local maths = require "lmodel.maths"
 local oscad = require "lmodel.openscad_print"
+local cubics = require("lmodel.cubics")
 
 local function getpolymesh(M, umult, mesh, usteps, wsteps)
 	local thickness = 1;
@@ -10,7 +11,7 @@ local function getpolymesh(M, umult, mesh, usteps, wsteps)
 
 	for w=0, wsteps do
 		for u=0, usteps do
-			local vert = bicerp(u/usteps, w/wsteps, mesh, M, 1);
+			local vert = cubics.bicerp(u/usteps, w/wsteps, mesh, M, 1);
 			--vec3_print(vert[1]);io.write(' ');vec3_print(vert[2]);io.write('\n');
 			table.insert(vertices, vert);
 			table.insert(points, vert.point);
@@ -30,7 +31,7 @@ local function test_bicubic_vertices()
 	local usteps = 24;
 	local wsteps = 24;
 
-	local polypoints = getpolymesh(cubic_bezier_M(), 1,
+	local polypoints = getpolymesh(cubics.Bezier_M, 1,
 			{gcp1, gcp2, gcp3, gcp4}, usteps, wsteps);
 
 	--print("Polypoints: ", type(polypoints));

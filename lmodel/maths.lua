@@ -3,6 +3,7 @@
 -- BUGBUG - separate vector stuff out
 
 local glsl = require("lmodel.glsl")
+local add, sub, mul, div = glsl.add, glsl.sub, glsl.mul, glsl.div
 
 local radians = math.rad
 local cos, sin = math.cos, math.sin
@@ -53,31 +54,19 @@ exports.clean = clean
 
 -- Basic vector routines
 -- Conversions
-function point3h_from_vec3(vec)
+local function point3h_from_vec3(vec)
 	return {vec[1], vec[2], vec[3], 1};
 end
+exports.point3h_from_vec3 = vec3_from_point3h
 
-function vec3_from_point3h(pt)
+local function vec3_from_point3h(pt)
 	return {pt[1], pt[2], pt[3]};
 end
+exports.vec3_from_point3h = vec3_from_point3h
 
-
---[[
-function vec4_add(v1, v2)
-	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3], v1[4]+v2[4]}
-end
---]]
 
 -- Multiply by a scalar
-function vec2_mults(v, s)
-	return {v[1]*s, v[2]*s}
-end
-
-function vec3_mults(v, s)
-	return {v[1]*s, v[2]*s, v[3]*s}
-end
-
-function vec4_mults(v, s)
+local function vec4_mults(v, s)
 	return {v[1]*s, v[2]*s, v[3]*s, v[4]*s}
 end
 
@@ -156,7 +145,7 @@ end
 -- Multiply two 4x4 matrices together
 -- This is one of the workhorse mechanisms of the
 -- graphics system
-function mat4_mult_mat4(m1, m2)
+local function mat4_mult_mat4(m1, m2)
 	return {
 	{glsl.dot(m1[1], mat4_col(m2,1)),
 	glsl.dot(m1[1], mat4_col(m2,2)),
@@ -179,6 +168,20 @@ function mat4_mult_mat4(m1, m2)
 	glsl.dot(m1[4], mat4_col(m2,4))},
 	}
 end
+exports.mat4_mult_mat4 = mat4_mult_mat4
+
+-- This is the other workhorse routine
+-- Most transformations are a multiplication
+-- of a vec4 and a mat4
+local function vec4_mult_mat4(vec, mat)
+	return {
+		glsl.dot(vec, mat4_col(mat,1)),
+		glsl.dot(vec, mat4_col(mat,2)),
+		glsl.dot(vec, mat4_col(mat,3)),
+		glsl.dot(vec, mat4_col(mat,4)),
+	}
+end
+exports.vec4_mult_mat4 = vec4_mult_mat4
 
 --
 -- Function: Iter_matm4_mult_mat4
@@ -199,17 +202,7 @@ function Iter_matm4_mult_mat4(m4, Tm)
 	end
 end
 
--- This is the other workhorse routine
--- Most transformations are a multiplication
--- of a vec4 and a mat4
-function vec4_mult_mat4(vec, mat)
-	return {
-		glsl.dot(vec, mat4_col(mat,1)),
-		glsl.dot(vec, mat4_col(mat,2)),
-		glsl.dot(vec, mat4_col(mat,3)),
-		glsl.dot(vec, mat4_col(mat,4)),
-	}
-end
+
 
 
 function vec4_mult_mat34(vec, mat)
@@ -248,211 +241,11 @@ end
 
 
 
---=======================================
---
---		Cubic Curve Routines
---
---=======================================
-function cubic_vec3_to_cubic_vec4(cps)
-	return {
-		point3h_from_vec3(cps[1]),
-		point3h_from_vec3(cps[2]),
-		point3h_from_vec3(cps[3]),
-		point3h_from_vec3(cps[4])
-		}
-end
 
-function vec43_to_vec44(mesh)
-	return {
-		cubic_vec3_to_cubic_vec4(mesh[1]),
-		cubic_vec3_to_cubic_vec4(mesh[2]),
-		cubic_vec3_to_cubic_vec4(mesh[3]),
-		cubic_vec3_to_cubic_vec4(mesh[4]),
-		}
-end
-
-function quadratic_U(u)
-	return {3*(u*u), 2*u, 1, 0}
-end
-
-function cubic_U(u)
-	return {u*u*u, u*u, u, 1}
-end
-
-function cerp(U, M, G)
-	return vec4_mult_mat4(vec4_mult_mat4(U, M), G)
-end
-
-function cubic_surface_pt(T, A, G, S)
-	local pt = vec3_from_point3h(
-		vec4_mult_mat4(vec4_mult_mat4(vec4_mult_mat4(T,A), G),S)
-	);
-	return pt;
-end
-
--- An iterator version
-function IterateCubicVertices(M, umult, G, steps)
-	local step=-1
-
-	return function()
-		step = step+1;
-		if step > steps then
-			return nil;
-		else
-			local U = cubic_U(step/steps);
-			local pt0 = cerp(U, M, G);
-
-			return pt0;
-		end
-	end
-end
-
---=====================================================
--- Function: bicerp
--- 		BiCubic Interpolation
---
--- M - Blending Function
--- mesh - 16 control points
--- u - Parametric
--- v - Parametric
---=====================================================
-function mesh_col(mesh, col)
-	local column = {mesh[1][col], mesh[2][col], mesh[3][col], mesh[4][col]};
-
-	return column;
-end
-
-function bicerp(u, w, mesh, M, umult)
-	-- 'U' for derivatives
-	local dU = vec4_mults(quadratic_U(u), umult);
-	local dW = vec4_mults(quadratic_U(w), umult);
-
-	-- 'U' for curve
-	local U = vec4_mults(cubic_U(u), umult);
-	local W = vec4_mults(cubic_U(w), umult);
-
-	-- Calculate point on curve in 'u' direction
-	local uPt1 = cerp(U, M, mesh[1]);
-	local uPt2 = cerp(U, M, mesh[2]);
-	local uPt3 = cerp(U, M, mesh[3]);
-	local uPt4 = cerp(U, M, mesh[4]);
-
-	local wPt1 = cerp(W, M, mesh_col(mesh, 1));
-	local wPt2 = cerp(U, M, mesh_col(mesh, 2));
-	local wPt3 = cerp(U, M, mesh_col(mesh, 3));
-	local wPt4 = cerp(U, M, mesh_col(mesh, 4));
-
-
-	-- Calculate the surface pt
-	local spt = cerp(W, M,{uPt1, uPt2, uPt3, uPt4});
-
-	-- tangent in the 'u' direction
-	local tupt = cerp(dU, M, {wPt1, wPt2, wPt3, wPt4});
-	-- tangent in the 'w' direction
-	local twpt = cerp(dW, M, {uPt1, uPt2, uPt3, uPt4});
-
-	-- Get the normal vector by crossing the two tangent
-	-- vectors
-	-- BUGBUG - maybe don't need to convert to vec3
-	local npt = vec3_norm(glsl.cross(
-				vec3_from_point3h(tupt),
-				vec3_from_point3h(twpt)));
-
-	-- BUGBUG - maybe return the two tangents as well as the normal?
-	-- return both the point, and the normal
-	return {point = spt, normal = npt};
-end
-
--- Blending Functions
-function cubic_hermite_M()
-	return {
-	{2, -2, 1, 1},
-	{-3, 3, -2, -1},
-	{0, 0, 1, 0},
-	{1, 0, 0, 0}
-	}
-end
-
-function cubic_bezier_M()
-	return {
-	{-1, 3, -3, 1},
-	{3, -6, 3, 0},
-	{-3, 3, 0, 0},
-	{1, 0, 0, 0}
-	}
-end
-
-function cubic_catmullrom_M()
-	return {
-	{-1, 3, -3, 1},
-	{2, -5, 4, -1},
-	{-1, 0, 1, 0},
-	{0, 2, 0, 0}
-	}
-end
-
-
-
---	To use the B-spline, you must use a multiplier of 1/6 on the matrix itself
---	Also, the parameter matrix is
---	[(t-ti)^3, (t-ti)^2, (t-ti), 1]
-
---	and the geometry is
-
---	[Pi-3, Pi-2, Pi-1, Pi]
-
---	Reference: http://spec.winprog.org/curves/
-
-
-function cubic_bspline_M()
-	return {
-	{-1, 2, -3, 1},
-	{3, -6, 3, 0},
-	{-3, 0, 3, 0},
-	{1, 4, 1, 0},
-	}
-end
-
-
-
---=======================================
---
---		Bezier Convenience Routines
---
---=======================================
-
-function berp(u, cps)
-	return cerp(cubic_U(u), cubic_bezier_M(), cubic_vec3_to_cubic_vec4(cps));
-end
-
-
--- Calculate a point on a Bezier mesh
--- Given the mesh, and the parametric 'u', and 'v' values
-function berpm(u,v, mesh)
-	return bcerp(u, v, cubic_bezier_M(), vec43_to_vec44(mesh));
-end
-
-
---=======================================
---
---		Hermite Convenience Routines
---
---=======================================
-
-function herp(u, cps)
-	return ccerp(cubic_U(u), cubic_hermite_M(), cubic_vec3_to_cubic_vec4(cps))
-end
-
--- Calculate a point on a cubic mesh
--- Given the mesh, and the parametric 'u', and 'v' values
-function herpm(u, v, mesh)
-	return bcerp(u, v, cubic_hermite_M(), vec43_to_vec44(mesh));
-end
 
 
 -- Useful functions
 -- Calculate the centroid of a list of vertices
-
 local function centroid(verts)
 	local minx = math.huge; maxx = -math.huge
 	local miny = math.huge; maxy = -math.huge

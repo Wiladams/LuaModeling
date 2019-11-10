@@ -2,6 +2,7 @@ package.path = "../?.lua;"..package.path
 
 local maths = require "lmodel.maths"
 local oscad = require "lmodel.openscad_print"
+local cubics = require("lmodel.cubics")
 
 
 local function test_cubic_vertices()
@@ -18,12 +19,12 @@ local function test_cubic_vertices()
 
 --vec4_print(pt0);
 
---points = IterateBiCubicVertices(cubic_bezier_M(), 1, cpts, 10);
+--points = IterateBiCubicVertices(cubics.Bezier_M, 1, cpts, 10);
 --polygon_print(points);
 
 	local points = {};
 
-	for v in IterateCubicVertices(cubic_bezier_M(), 1, cptsh, 30) do
+	for v in cubics.IterateCubicVertices(cubics.Bezier_M, 1, cptsh, 30) do
 		table.insert(points,v);
 	end
 

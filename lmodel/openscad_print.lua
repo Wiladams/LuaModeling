@@ -162,8 +162,8 @@ local function GetBiCubicVertices(M, umult, cps, steps)
 	results = {};
 
 	for step=0, steps  do
-		local U = cubic_U(step/steps)
-		local pt0 = cerp(U, M, G)
+		local U = maths.cubic_U(step/steps)
+		local pt0 = maths.cerp(U, M, G)
 
 		table.insert(results, pt0);
 		--vec4_print(pt0);
