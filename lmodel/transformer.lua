@@ -45,6 +45,10 @@ function Transformer.applyTransform(self, m)
 end
 
 function Transformer.translate(self, dx, dy, dz)
+	dx = dx or 0
+	dy = dy or 0
+	dz = dz or 0
+
 	local t = maths.mat4_translation(dx, dy, dz)
 	return self:applyTransform(t)
 end

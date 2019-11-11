@@ -6,11 +6,16 @@ local radians = math.rad
 local oscad = require "lmodel.openscad_print"
 local f = assert(io.open("output/planetarium.scad", 'w'));
 local ell = require("lmodel.ellipsoid")
-local tform = require("lmodel.transformer")()
+local Transformer = require("lmodel.transformer")
 
-tform:translate(70, 70,20)
-tform:rotate(radians(30),radians(0),radians(30))
-tform:scale(1.5, 1, 1)
+local tform1 = Transformer()
+tform1:translate(70, 70,20)
+tform1:rotate(radians(30),radians(0),radians(30))
+tform1:scale(1.5, 1, 1)
+
+local tform2 = Transformer()
+tform2:scale(0.5, 0.25, 0.25)
+tform2:translate(-80, -50, 0)
 
 local e1 = ell {
 	XRadius = 70,
@@ -20,5 +25,7 @@ local e1 = ell {
 	MaxPhi = math.pi/2
 }
 
+oscad.PolyMesh_print(f,e1:getMesh(), tform1)
+oscad.PolyMesh_print(f,e1:getMesh(), tform2)
 
-oscad.PolyMesh_print(f,e1:getMesh(), tform)
+f:close()
