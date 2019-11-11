@@ -22,28 +22,33 @@ local function fprintf(f, fmt, ...)
 	f:write(format(fmt, ...))
 end
 
-function vec2_fwrite(f, v)
+local function vec2_fwrite(f, v)
 	return fwrite(f, '[', v[1],',',v[2],']');
 end
 
-function vec2_write(v)
+local function vec2_write(v)
 	return vec2_fwrite(io.stdout, v)
 end
 
-function vec3_fwrite(f, v)
+local function vec3_fwrite(f, v)
 	f:write(format("[%5.4f,%5.4f,%5.4f]", v[1],v[2],v[3]));
 end
 
-function vec3_print_tuple(v)
+local function vec3_write(v)
+	vec3_fwrite(io.stdout, v)
+end
+exports.vec3_write = vec3_write
+
+local function vec3_print_tuple(v)
 	io.write(v[1],',',v[2],',',v[3],'\n');
 end
 
-function vec4_print(v)
+local function vec4_print(v)
 	write('[', v[1],',',v[2],',',v[3],',',v[4],']');
 	--io.write("[%5.2f,%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3],v[4]);
 end
 
-function vec4_fprint(f, v)
+local function vec4_fprint(f, v)
 	fwrite(f,'[', v[1],',',v[2],',',v[3],',',v[4],']');
 	--io.write("[%5.2f,%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3],v[4]);
 end
@@ -76,6 +81,7 @@ print("[");
 	end
 	print("]");
 end
+exports.mat4_print = matx4_print
 
 local function table_fprint_indices(f, a)
 	fwrite(f, "[\n");
@@ -181,9 +187,12 @@ local function print_face_tuple(f, a)
 
 end
 
-local function PolyMesh_print(f, mesh)
+local function PolyMesh_fprint(f, mesh, tformer)
 	f:write("polyhedron(points= [\n");
 	for i,pt in ipairs(mesh:Vertices()) do
+		if tformer then
+			pt = tformer:transformPoint(pt)
+		end
 		vec3_fwrite(f, pt);
 		f:write(",\n");
 	end
@@ -196,6 +205,6 @@ local function PolyMesh_print(f, mesh)
 	end
 	f:write("]);\n");
 end
-exports.PolyMesh_print = PolyMesh_print
+exports.PolyMesh_print = PolyMesh_fprint
 
 return exports

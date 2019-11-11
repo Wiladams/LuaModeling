@@ -143,7 +143,7 @@ function mat4_translation(x, y, z)
 	{x, y, z, 1}
 	}
 end
-exports.translation = mat4_translation
+exports.mat4_translation = mat4_translation
 
 -- 	Scale
 local function  mat4_scale(sx,sy,sz)
@@ -155,6 +155,46 @@ local function  mat4_scale(sx,sy,sz)
 	}
 end
 exports.mat4_scale = mat4_scale
+
+--	Rotation
+local function mat4_rotx(rads)
+	local sinang = sin(rads);
+	local cosang = cos(rads);
+
+	return {
+	{1, 0, 0, 0},
+	{0, cosang, sinang, 0},
+	{0, -sinang, cosang, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_rotx = mat4_rotx
+
+local function  mat4_roty(rads)
+	local sinang = math.sin(rads);
+	local cosang = math.cos(rads);
+
+	return {
+	{cosang, 0, -sinang, 0},
+	{0, 1, 0, 0},
+	{sinang, 0, cosang, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_roty = mat4_roty
+
+function  mat4_rotz(rads)
+	local sinang = math.sin(rads);
+	local cosang = math.cos(rads);
+
+	return {
+	{cosang, sinang, 0, 0},
+	{-sinang, cosang, 0, 0},
+	{0, 0, 1, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_rotz = mat4_rotz
 
 -- Multiply two 4x4 matrices together
 -- This is one of the workhorse mechanisms of the
