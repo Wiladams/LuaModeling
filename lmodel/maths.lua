@@ -3,13 +3,13 @@
 -- BUGBUG - separate vector stuff out
 
 local glsl = require("lmodel.glsl")
+local add, sub, mul, div = glsl.add, glsl.sub, glsl.mul, glsl.div
 
 local radians = math.rad
 local cos, sin = math.cos, math.sin
 
 -- Useful constants
 local Cphi = 1.618
-
 local Cepsilon = 0.00000001;
 
 local exports = {
@@ -53,31 +53,19 @@ exports.clean = clean
 
 -- Basic vector routines
 -- Conversions
-function point3h_from_vec3(vec)
+local function point3h_from_vec3(vec)
 	return {vec[1], vec[2], vec[3], 1};
 end
+exports.point3h_from_vec3 = vec3_from_point3h
 
-function vec3_from_point3h(pt)
+local function vec3_from_point3h(pt)
 	return {pt[1], pt[2], pt[3]};
 end
+exports.vec3_from_point3h = vec3_from_point3h
 
-
---[[
-function vec4_add(v1, v2)
-	return {v1[1]+v2[1], v1[2]+v2[2], v1[3]+v2[3], v1[4]+v2[4]}
-end
---]]
 
 -- Multiply by a scalar
-function vec2_mults(v, s)
-	return {v[1]*s, v[2]*s}
-end
-
-function vec3_mults(v, s)
-	return {v[1]*s, v[2]*s, v[3]*s}
-end
-
-function vec4_mults(v, s)
+local function vec4_mults(v, s)
 	return {v[1]*s, v[2]*s, v[3]*s, v[4]*s}
 end
 
@@ -91,19 +79,10 @@ function vec3_length(v)
 	return math.sqrt(vec3_lengthsquared(v))
 end
 
-function vec3_norm(v)
-	return vec3_mults(v, 1/vec3_length(v))
+local function vec3_norm(v)
+	return glsl.mul(v, 1/glsl.length(v))
 end
-
-
-
-function vec3_cross(v1, v2)
-	return {
-		(v1[2]*v2[3])-(v2[2]*v1[3]),
-		(v1[3]*v2[1])-(v2[3]*v1[1]),
-		(v1[1]*v2[2])-(v2[1]*v1[2])
-	}
-end
+exports.vec3_norm = vec3_norm
 
 
 --=========================================
@@ -115,7 +94,7 @@ end
 -- Lower right 1x1 == overall scaling
 --=========================================
 
-function mat4_identity()
+local function mat4_identity()
 	return {
 	{1, 0, 0, 0},
 	{0, 1, 0, 0},
@@ -123,8 +102,10 @@ function mat4_identity()
 	{0, 0, 0, 1}
 	}
 end
+exports.mat4_identity = mat4_identity
 
-function mat4_transpose(m)
+
+local function mat4_transpose(m)
 	return {
 	mat4_col(m,0),
 	mat4_col(m,1),
@@ -133,7 +114,7 @@ function mat4_transpose(m)
 	}
 end
 
-function mat4_col(m, col)
+local function mat4_col(m, col)
 	return {
 	m[1][col],
 	m[2][col],
@@ -142,7 +123,7 @@ function mat4_col(m, col)
 	}
 end
 
-function mat4_add_mat4(m1, m2)
+local function mat4_add_mat4(m1, m2)
 	return {
 	glsl.add(m1[1], m2[1]),
 	glsl.add(m1[2], m2[2]),
@@ -151,12 +132,73 @@ function mat4_add_mat4(m1, m2)
 	}
 end
 
+-- Linear Transformations
+--	Translate
+function mat4_translation(x, y, z)
+	return {
+	{1, 0, 0, 0},
+	{0, 1, 0, 0},
+	{0, 0, 1, 0},
+	{x, y, z, 1}
+	}
+end
+exports.mat4_translation = mat4_translation
 
+-- 	Scale
+local function  mat4_scale(sx,sy,sz)
+	return {
+	{sx,0,0,0},
+	{0,sy,0,0},
+	{0,0,sz,0},
+	{0,0,0,1}
+	}
+end
+exports.mat4_scale = mat4_scale
+
+--	Rotation
+local function mat4_rotx(rads)
+	local sinang = sin(rads);
+	local cosang = cos(rads);
+
+	return {
+	{1, 0, 0, 0},
+	{0, cosang, sinang, 0},
+	{0, -sinang, cosang, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_rotx = mat4_rotx
+
+local function  mat4_roty(rads)
+	local sinang = math.sin(rads);
+	local cosang = math.cos(rads);
+
+	return {
+	{cosang, 0, -sinang, 0},
+	{0, 1, 0, 0},
+	{sinang, 0, cosang, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_roty = mat4_roty
+
+function  mat4_rotz(rads)
+	local sinang = math.sin(rads);
+	local cosang = math.cos(rads);
+
+	return {
+	{cosang, sinang, 0, 0},
+	{-sinang, cosang, 0, 0},
+	{0, 0, 1, 0},
+	{0, 0, 0, 1}
+	}
+end
+exports.mat4_rotz = mat4_rotz
 
 -- Multiply two 4x4 matrices together
 -- This is one of the workhorse mechanisms of the
 -- graphics system
-function mat4_mult_mat4(m1, m2)
+local function mat4_mult_mat4(m1, m2)
 	return {
 	{glsl.dot(m1[1], mat4_col(m2,1)),
 	glsl.dot(m1[1], mat4_col(m2,2)),
@@ -179,30 +221,12 @@ function mat4_mult_mat4(m1, m2)
 	glsl.dot(m1[4], mat4_col(m2,4))},
 	}
 end
-
---
--- Function: Iter_matm4_mult_mat4
---
--- Description: Given a matrix of homogenized input
---	points, multiply then by the transform matrix, and
---	return them one by one as an iterator.
-function Iter_matm4_mult_mat4(m4, Tm)
-	local row=0;
-
-	return function()
-		row = row+1;
-		if row > #m4 then	-- If we've run out of rows
-			return nil;	-- we are done
-		else
-			return vec4_mult_mat4(m4[row], Tm);
-		end
-	end
-end
+exports.mat4_mult_mat4 = mat4_mult_mat4
 
 -- This is the other workhorse routine
 -- Most transformations are a multiplication
 -- of a vec4 and a mat4
-function vec4_mult_mat4(vec, mat)
+local function vec4_mult_mat4(vec, mat)
 	return {
 		glsl.dot(vec, mat4_col(mat,1)),
 		glsl.dot(vec, mat4_col(mat,2)),
@@ -210,6 +234,34 @@ function vec4_mult_mat4(vec, mat)
 		glsl.dot(vec, mat4_col(mat,4)),
 	}
 end
+exports.vec4_mult_mat4 = vec4_mult_mat4
+
+
+--[[
+	This routine is a speedup convenience.  It is a point 
+	transform using homogeneous points (x,y,z,1).  The vec
+	parameter is an xyz (only 3 elements).  Instead of padding
+	the vec by creating a new table with a last value of '1',
+	we can simply expand the dot product and put in the 
+	implied '1'.  Faster than memory allocation for a new table
+	and garbage collection pressure.
+
+	BUGBUG - should unroll one more level deep and eliminate the
+	mat4_col call.
+]]
+local function point_mult_mat4(vec, mat)
+	local function dot34(a, b)
+		return a[1]*b[1]+a[2]*b[2]+a[3]*b[3]+1*b[4]
+	end
+
+	return {
+		dot34(vec, mat4_col(mat,1)),
+		dot34(vec, mat4_col(mat,2)),
+		dot34(vec, mat4_col(mat,3)),
+		dot34(vec, mat4_col(mat,4)),
+	}
+end
+exports.point_mult_mat4 = point_mult_mat4
 
 
 function vec4_mult_mat34(vec, mat)
@@ -220,333 +272,34 @@ function vec4_mult_mat34(vec, mat)
 	}
 end
 
---=======================================
---
---	Linear Interpolation Routines
---
---=======================================
-function lerp1( p0, p1, u)
-	return (1-u)*p0 + u*p1
-end
-
-function vec3_lerp(v1, v2, u)
-	return {
-	lerp1(v1[1], v2[1],u),
-	lerp1(v1[2], v2[2],u),
-	lerp1(v1[3], v2[3],u)
-	}
-end
-
-function vec4_lerp(v1, v2, u)
-	return {
-	lerp1(v1[1], v2[1],u),
-	lerp1(v1[2], v2[2],u),
-	lerp1(v1[3], v2[3],u),
-	lerp1(v1[4], v2[4],u)
-	}
-end
-
-
-
---=======================================
---
---		Cubic Curve Routines
---
---=======================================
-function cubic_vec3_to_cubic_vec4(cps)
-	return {
-		point3h_from_vec3(cps[1]),
-		point3h_from_vec3(cps[2]),
-		point3h_from_vec3(cps[3]),
-		point3h_from_vec3(cps[4])
-		}
-end
-
-function vec43_to_vec44(mesh)
-	return {
-		cubic_vec3_to_cubic_vec4(mesh[1]),
-		cubic_vec3_to_cubic_vec4(mesh[2]),
-		cubic_vec3_to_cubic_vec4(mesh[3]),
-		cubic_vec3_to_cubic_vec4(mesh[4]),
-		}
-end
-
-function quadratic_U(u)
-	return {3*(u*u), 2*u, 1, 0}
-end
-
-function cubic_U(u)
-	return {u*u*u, u*u, u, 1}
-end
-
-function cerp(U, M, G)
-	return vec4_mult_mat4(vec4_mult_mat4(U, M), G)
-end
-
-function cubic_surface_pt(T, A, G, S)
-	local pt = vec3_from_point3h(
-		vec4_mult_mat4(vec4_mult_mat4(vec4_mult_mat4(T,A), G),S)
-	);
-	return pt;
-end
-
--- An iterator version
-function IterateCubicVertices(M, umult, G, steps)
-	local step=-1
-
-	return function()
-		step = step+1;
-		if step > steps then
-			return nil;
-		else
-			local U = cubic_U(step/steps);
-			local pt0 = cerp(U, M, G);
-
-			return pt0;
-		end
-	end
-end
-
---=====================================================
--- Function: bicerp
--- 		BiCubic Interpolation
---
--- M - Blending Function
--- mesh - 16 control points
--- u - Parametric
--- v - Parametric
---=====================================================
-function mesh_col(mesh, col)
-	local column = {mesh[1][col], mesh[2][col], mesh[3][col], mesh[4][col]};
-
-	return column;
-end
-
-function bicerp(u, w, mesh, M, umult)
-	-- 'U' for derivatives
-	local dU = vec4_mults(quadratic_U(u), umult);
-	local dW = vec4_mults(quadratic_U(w), umult);
-
-	-- 'U' for curve
-	local U = vec4_mults(cubic_U(u), umult);
-	local W = vec4_mults(cubic_U(w), umult);
-
-	-- Calculate point on curve in 'u' direction
-	local uPt1 = cerp(U, M, mesh[1]);
-	local uPt2 = cerp(U, M, mesh[2]);
-	local uPt3 = cerp(U, M, mesh[3]);
-	local uPt4 = cerp(U, M, mesh[4]);
-
-	local wPt1 = cerp(W, M, mesh_col(mesh, 1));
-	local wPt2 = cerp(U, M, mesh_col(mesh, 2));
-	local wPt3 = cerp(U, M, mesh_col(mesh, 3));
-	local wPt4 = cerp(U, M, mesh_col(mesh, 4));
-
-
-	-- Calculate the surface pt
-	local spt = cerp(W, M,{uPt1, uPt2, uPt3, uPt4});
-
-	-- tangent in the 'u' direction
-	local tupt = cerp(dU, M, {wPt1, wPt2, wPt3, wPt4});
-	-- tangent in the 'w' direction
-	local twpt = cerp(dW, M, {uPt1, uPt2, uPt3, uPt4});
-
-	-- Get the normal vector by crossing the two tangent
-	-- vectors
-	-- BUGBUG - maybe don't need to convert to vec3
-	local npt = vec3_norm(glsl.cross(
-				vec3_from_point3h(tupt),
-				vec3_from_point3h(twpt)));
-
-	-- BUGBUG - maybe return the two tangents as well as the normal?
-	-- return both the point, and the normal
-	return {point = spt, normal = npt};
-end
-
--- Blending Functions
-function cubic_hermite_M()
-	return {
-	{2, -2, 1, 1},
-	{-3, 3, -2, -1},
-	{0, 0, 1, 0},
-	{1, 0, 0, 0}
-	}
-end
-
-function cubic_bezier_M()
-	return {
-	{-1, 3, -3, 1},
-	{3, -6, 3, 0},
-	{-3, 3, 0, 0},
-	{1, 0, 0, 0}
-	}
-end
-
-function cubic_catmullrom_M()
-	return {
-	{-1, 3, -3, 1},
-	{2, -5, 4, -1},
-	{-1, 0, 1, 0},
-	{0, 2, 0, 0}
-	}
-end
-
-
-
---	To use the B-spline, you must use a multiplier of 1/6 on the matrix itself
---	Also, the parameter matrix is
---	[(t-ti)^3, (t-ti)^2, (t-ti), 1]
-
---	and the geometry is
-
---	[Pi-3, Pi-2, Pi-1, Pi]
-
---	Reference: http://spec.winprog.org/curves/
-
-
-function cubic_bspline_M()
-	return {
-	{-1, 2, -3, 1},
-	{3, -6, 3, 0},
-	{-3, 0, 3, 0},
-	{1, 4, 1, 0},
-	}
-end
-
-
-
---=======================================
---
---		Bezier Convenience Routines
---
---=======================================
-
-function berp(u, cps)
-	return cerp(cubic_U(u), cubic_bezier_M(), cubic_vec3_to_cubic_vec4(cps));
-end
-
-
--- Calculate a point on a Bezier mesh
--- Given the mesh, and the parametric 'u', and 'v' values
-function berpm(u,v, mesh)
-	return bcerp(u, v, cubic_bezier_M(), vec43_to_vec44(mesh));
-end
-
-
---=======================================
---
---		Hermite Convenience Routines
---
---=======================================
-
-function herp(u, cps)
-	return ccerp(cubic_U(u), cubic_hermite_M(), cubic_vec3_to_cubic_vec4(cps))
-end
-
--- Calculate a point on a cubic mesh
--- Given the mesh, and the parametric 'u', and 'v' values
-function herpm(u, v, mesh)
-	return bcerp(u, v, cubic_hermite_M(), vec43_to_vec44(mesh));
-end
-
-
-
-
-
-
-
-
-
-
-
-
---[[
-==================================
-  Spherical coordinates
-==================================
---]]
-
---[[
- create an instance of a spherical coordinate
- long - rotation around z -axis
- lat - latitude, starting at 0 == 'north pole'
- rad - distance from center
---]]
-function sph(long, lat, rad)
-	return {long, lat, rad}
-end
-
--- Convert spherical to cartesian
-function sph_to_cart(s)
-	return {
-	clean(s[3]*sin(s[2])*cos(s[1])),
-	clean(s[3]*sin(s[2])*sin(s[1])),
-	clean(s[3]*cos(s[2]))
-	}
-end
-
--- Convert from cartesian to spherical
-function sph_from_cart(c)
-	return sph(
-	math.atan2(c[2],c[1]),
-	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
-	math.sqrt(c[1]*c[1]+c[2]*c[2]+c[3]*c[3])
-	)
-end
-
-function sphu_from_cart(c, rad)
-	return sph(
-	math.atan2(c[2],c[1]),
-	math.atan2(math.sqrt(c[1]*c[1]+c[2]*c[2]), c[3]),
-	rad
-	)
-end
-
--- compute the chord distance between two points on a sphere
-function sph_dist(c1, c2)
-	return math.sqrt(
-	c1[3]*c1[3] + c2[3]*c2[3] -
-	2*c1[3]*c2[3]*
-	((math.cos(c1[2])*math.cos(c2[2])) +
-	math.cos(c1[1]-c2[1])*math.sin(c1[2])*math.sin(c2[2]))
-	);
-end
 
 
 
 -- Useful functions
-function factorial(n)
-	if n==0 then
-		return 1
-	else
-		return n * factorial(n-1)
-	end
-end
+-- Calculate the centroid of a list of vertices
+local function centroid(verts)
+	local minx = math.huge; maxx = -math.huge
+	local miny = math.huge; maxy = -math.huge
+	local minz = math.huge; maxz = -math.huge
 
-
-
---[[
- Function: safediv
-
- Parameters
-	n - The numerator
-	d - The denominator
-
- Description:
-	Since division by zero is generally not a desirable thing, safediv
-	will return '0' whenever there is a division by zero.  Although this will
-	mask some erroneous division by zero errors, it is often the case
-	that you actually want this behavior.  So, it makes it convenient.
-
-	BUGBUG - a better approach would be to return math.inf instead
---]]
-function safediv(n,d)
-	if (d==0) then
-		return 0
+	for _,v in ipairs(verts) do
+		minx = math.min(v[1], minx); maxx = math.max(v[1], maxx);
+		miny = math.min(v[2], miny); maxy = math.max(v[2], maxy);
+		minz = math.min(v[3], minz); maxz = math.max(v[3], maxz);
 	end
 
-	return n/d;
+	local x = minx + (maxx-minx)/2;
+	local y = miny + (maxy-miny)/2;
+	local z = minz + (maxz-minz)/2;
+
+	return {x,y,z}
 end
+exports.centroid = centroid
+
+
+
+
+
 
 
 return exports

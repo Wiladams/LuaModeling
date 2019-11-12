@@ -44,9 +44,10 @@ function BiParametric.getIndex(self, row, column, offset)
 	return offset + (row*(self.USteps+1) + column + 1)
 end
 
-function BiParametric.getFaces(self)
+function BiParametric.createFaces(self)
 	local faces = {};
 
+	-- Create the essential surface faces
 	for w=0, self.WSteps-1 do
 		for u=0, self.USteps-1 do
 			local v1 = self:getIndex(w, u, 0)
@@ -75,11 +76,12 @@ function BiParametric.getFaces(self)
 
     -- If there is no thickness, just return
     -- what we currently have
-	if self.Thickness == nil then
+	if not self.Thickness then
 		return faces
 	end
 
-	local offset = ((self.WSteps+1)*(self.USteps+1))	-- skip past 'outside' surface
+	-- skip past 'outside' surface
+	local offset = ((self.WSteps+1)*(self.USteps+1))	
 
 	-- Get the faces for the 'inside' if we have a thickness
 	-- We should do a sanity check to ensure we have enough vertices
@@ -110,12 +112,12 @@ function BiParametric.getFaces(self)
 			-- if a triangle is essentially non-existant, and
 			-- eliminate it from the list of faces
 			-- This happens at the poles of an ellipsoid for example
-				table.insert(faces, tri3)
-				table.insert(faces, tri4)
+			table.insert(faces, tri3)
+			table.insert(faces, tri4)
 		end
 	end
 
-
+--[=[
 	-- Create the edging faces
 
 	-- Front Edge, u = 0,self.USteps-1, w=0
@@ -177,8 +179,16 @@ function BiParametric.getFaces(self)
 		table.insert(faces, tri11)
 		table.insert(faces, tri12)
 	end
-
+--]=]
 	return faces;
+end
+
+function BiParametric.getFaces(self)
+	if not self.Faces then
+		self.Faces = self:createFaces()
+	end
+
+	return self.Faces
 end
 
 function BiParametric.getVertex(self, u, w)
@@ -203,17 +213,17 @@ function BiParametric.getVertices(self)
 		end
 	end
 
-	if self.Thickness == nil then
-		return vertices
-	end
-
 --print("Extra Vertices")
 
 	-- If we have a thickness, then use the normals to calculate
 	-- the set of vertices for the 'inside'
 	local nverts = #vertices
-    if #normals > 0  then
 
+	--print("BiParametric.adding thickness: ", nverts, #normals)
+
+	-- Add in vertices based on the normals and a thickness
+	-- if they were specified
+    if self.Thickness and #normals > 0  then
 		for i=1,nverts do
 			local norm = normals[i]
 			local vert = vertices[i]
@@ -226,7 +236,7 @@ function BiParametric.getVertices(self)
 	return vertices, normals;
 end
 
-function BiParametric.getMesh(self)
+function BiParametric.createMesh(self)
 	local amesh = trimesh();
 
 	self.Vertices, self.Normals = self:getVertices()
@@ -241,6 +251,14 @@ function BiParametric.getMesh(self)
 	end
 
 	return amesh
+end
+
+function BiParametric.getMesh(self)
+	if not self.Mesh then
+		self.Mesh = self:createMesh(self)
+	end
+
+	return self.Mesh
 end
 
 

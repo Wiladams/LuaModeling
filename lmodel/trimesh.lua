@@ -66,6 +66,8 @@ function TriangleMesh.addface(self, face)
 	local p1 = self.vertices[face[2]];
 	local p2 = self.vertices[face[3]];
 
+	--print("PolyMesh.addface: ", #self.faces, p0, p1, p2)
+
 	local v1 = glsl.sub(p0,p1);
 	local v2 = glsl.sub(p2,p1);
 

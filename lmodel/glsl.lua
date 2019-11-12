@@ -253,10 +253,17 @@ local function fract3(x)
 end
 exports.fract3 = fract3
 
+
 exports.max = math.max
 exports.min = math.min
 
--- Essentially lerp
+
+--[[
+	x + a*(y-x)
+
+	Does NOT clamp to range.
+	
+]]
 local function mix(x, y, a)
 	return add(x,mul(sub(y,x),a))
 end
@@ -355,8 +362,11 @@ local function distance(v1,v2)
 end
 exports.distance = distance
 
+-- cross product
+-- this only works when the length of v1 and v2
+-- are at least 3
 local function cross(v1, v2)
-	if #v1 ~= 3 then
+	if #v1 < 3 or #v2 < 3 then
 		return nil
 	end
 
