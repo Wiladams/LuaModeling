@@ -10,7 +10,6 @@ local cos, sin = math.cos, math.sin
 
 -- Useful constants
 local Cphi = 1.618
-
 local Cepsilon = 0.00000001;
 
 local exports = {
@@ -265,7 +264,6 @@ end
 exports.point_mult_mat4 = point_mult_mat4
 
 
-
 function vec4_mult_mat34(vec, mat)
 	return {
 	glsl.dot(vec, mat4_col(mat,1)),
@@ -273,34 +271,6 @@ function vec4_mult_mat34(vec, mat)
 	glsl.dot(vec, mat4_col(mat,3))
 	}
 end
-
---=======================================
---
---	Linear Interpolation Routines
---
---=======================================
-function lerp1( p0, p1, u)
-	return (1-u)*p0 + u*p1
-end
-
-function vec3_lerp(v1, v2, u)
-	return {
-	lerp1(v1[1], v2[1],u),
-	lerp1(v1[2], v2[2],u),
-	lerp1(v1[3], v2[3],u)
-	}
-end
-
-function vec4_lerp(v1, v2, u)
-	return {
-	lerp1(v1[1], v2[1],u),
-	lerp1(v1[2], v2[2],u),
-	lerp1(v1[3], v2[3],u),
-	lerp1(v1[4], v2[4],u)
-	}
-end
-
-
 
 
 
@@ -326,38 +296,10 @@ local function centroid(verts)
 end
 exports.centroid = centroid
 
-local function factorial(n)
-	if n==0 then
-		return 1
-	else
-		return n * factorial(n-1)
-	end
-end
 
 
 
---[[
- Function: safediv
 
- Parameters
-	n - The numerator
-	d - The denominator
-
- Description:
-	Since division by zero is generally not a desirable thing, safediv
-	will return '0' whenever there is a division by zero.  Although this will
-	mask some erroneous division by zero errors, it is often the case
-	that you actually want this behavior.  So, it makes it convenient.
-
-	BUGBUG - a better approach would be to return math.inf instead
---]]
-local function safediv(n,d)
-	if (d==0) then
-		return 0
-	end
-
-	return n/d;
-end
 
 
 return exports

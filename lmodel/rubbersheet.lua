@@ -45,7 +45,7 @@ end
 
 function RubberSheet.getVertex(self, u, w)
 	if self.VertexSampler ~= nil then
-		return self.VertexSampler:GetVertex(u,w)
+		return self.VertexSampler:getVertex(u,w)
 	end
 
 	local x = u*self.Size[1]

@@ -257,7 +257,13 @@ exports.fract3 = fract3
 exports.max = math.max
 exports.min = math.min
 
--- Essentially lerp
+
+--[[
+	x + a*(y-x)
+
+	Does NOT clamp to range.
+	
+]]
 local function mix(x, y, a)
 	return add(x,mul(sub(y,x),a))
 end

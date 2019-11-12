@@ -8,6 +8,7 @@ local BiParametric = require("lmodel.biparametric")
 local maths = require ("lmodel.maths")
 local glsl = require("lmodel.glsl")
 
+local centroid = maths.centroid
 local spherical = require("lmodel.spherical")
 local sph_to_cart = spherical.sph_to_cart
 
@@ -91,15 +92,16 @@ local Metaball_mt = {
 function Metaball.new(self, obj)
     obj = BiParametric:new(obj)
 
+	-- Must specify at least the balls
 	obj.balls = obj.balls
-	obj.atcenter = maths.centroid(obj.balls)
 	obj.radius = obj.radius or 100
+
+
 	obj.Threshold = obj.Threshold or 0.001
     obj.Influencer = obj.Influencer or MBInfluence
 
-	--self.Bounds = GAABBox({})
-
-
+	obj.atcenter = centroid(obj.balls)
+	-- determine tolerance for the solver
 	obj.MaxThreshold = obj.Threshold + 1
 	obj.MinThreshold = 1 - obj.Threshold
 
@@ -108,11 +110,11 @@ function Metaball.new(self, obj)
     return obj
 end
 
-
--- Recursively search down the beam
--- until we bump into the surface
--- we need to turn polar coordinates into
--- cartesian coordinates
+--[[
+	Recursively search down the beam until we bump into the surface.
+	The search space uses a scan of a polar coordinate system.
+	We need to turn polar coordinates into cartesian coordinates
+--]]
 function Metaball.beamsearch(self, longitude, latitude, high, low)
 	-- If the high and low have met, then there's no
 	-- intersection with the surface
@@ -145,12 +147,22 @@ function Metaball.beamsearch(self, longitude, latitude, high, low)
 	end
 end
 
+--[[
+	getVertex
+
+	Given parameters 'u' and 'v' determine a vertex on the surface
+
+	'v' indicates the latitude, and is in radians, starting from
+	0 at the north pole, and extending to PI at the south pole.
+
+	'u' indicates longitude, and goes from 0 to 2*PI
+]]
 function Metaball.getVertex(self, u, v)
 	-- We have the latitude and longitude
 	-- We want to descend down the radius until
-	-- we intersect the object
+	-- we intersect the object using a binary search
 	-- Ideally we could just solve for the intersection
-	-- perhaps binary search?
+
 	local longitude = u * 2 * PI;
 	local latitude = PI - v * PI;
 

@@ -21,6 +21,29 @@ needs to be converted
 
 local maths = require('lmodel.maths')
 
+--[[
+ Function: safediv
+
+ Parameters
+	n - The numerator
+	d - The denominator
+
+ Description:
+	Since division by zero is generally not a desirable thing, safediv
+	will return '0' whenever there is a division by zero.  Although this will
+	mask some erroneous division by zero errors, it is often the case
+	that you actually want this behavior.  So, it makes it convenient.
+
+	BUGBUG - a better approach would be to return math.inf instead
+--]]
+local function safediv(n,d)
+	if (d==0) then
+		return 0
+	end
+
+	return n/d;
+end
+
 local function poly_sum_interior_angles(sides)
 	return (sides-2)*180;
 end 

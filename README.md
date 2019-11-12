@@ -66,7 +66,7 @@ Once you open the file in OpenSCAD, you can simply leave OpenSCAD open to make i
 
 More Examples
 =============
-You can look at these various [examples](https://github.com/Wiladams/LuaModeling/tree/master/examples) for ideas of what LuaModeling is capable of.
+You can look at these various [examples](examples) for ideas of what LuaModeling is capable of.
 
 
 Documentation
