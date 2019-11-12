@@ -8,13 +8,49 @@ local BiParametric = require ("lmodel.BiParametric")
 local glsl = require("lmodel.glsl")
 local cos, sin = glsl.cos, glsl.sin
 
--- Offset
--- Size
-local function alerp( a1, a2, u)
-	return a1 + u*(a2-a1)
+-- a parameterized function that generates a circle
+local ParametricCircle = {}
+setmetatable(ParametricCircle, {
+	__call = function(self, ...)
+		return self:new(...)
+	end;
+})
+local ParametricCircle_mt = {
+	__index = ParametricCircle
+}
+
+function ParametricCircle.new(self, params)
+	local obj = {
+		MinTheta = params.MinTheta or 0;
+		MaxTheta = params.MaxTheta or radians(360);
+
+		Radius = params.Radius or 1;
+	}
+	setmetatable(obj, ParametricCircle_mt)
+	print("Radius: ", obj.Radius)
+
+	return obj
+end
+
+function ParametricCircle.getVertex(self, u)
+	-- If we don't have a profile generator
+	-- Assume the profile should be a circle
+	local angle = glsl.mix(self.MinTheta, self.MaxTheta, u)
+	local x = self.Radius*sin(angle)
+	local y = self.Radius*sin(angle)
+	local z = self.Radius*cos(angle)
+
+	return {x,y,z}
 end
 
 
+--[[
+	Torus
+
+	Description: An object representing a Torus.
+	You can specify the radius of the cross section
+	as well as the overall inner radius of the shape.
+]]
 local Torus = {}
 setmetatable(Torus, {
     __index = BiParametric;
@@ -31,12 +67,17 @@ function Torus.new(self, obj)
 
 	obj.HoleRadius = obj.HoleRadius or 1
 	obj.ProfileRadius = obj.ProfileRadius or 1
-	obj.ProfileSampler = obj.ProfileSampler or nil
 
 	obj.MinTheta = obj.MinTheta or 0
 	obj.MaxTheta = obj.MaxTheta or 2*math.pi
 	obj.MinPhi = obj.MinPhi or 0
 	obj.MaxPhi = obj.MaxPhi or 2*math.pi
+
+	obj.ProfileSampler = obj.ProfileSampler or ParametricCircle({
+		MinTheta = obj.MinTheta,
+		MaxTheta = obj.MaxTheta,
+		Radius = obj.ProfileRadius})
+
 
     setmetatable(obj, Torus_mt)
 
@@ -44,15 +85,17 @@ function Torus.new(self, obj)
 end
 
 
+
 -- Should be an x,z value
 function Torus.getProfileVertex(self, u)
 
-	local thetaangle = alerp(self.MinTheta, self.MaxTheta, u)
+	local thetaangle = glsl.mix(self.MinTheta, self.MaxTheta, u)
+
 	u = thetaangle/self.MaxTheta
 
 	if self.ProfileSampler ~= nil then
 		-- Get the profile
-		local profilept = self.ProfileSampler:GetProfileVertex(u)
+		local profilept = self.ProfileSampler:getVertex(u)
 
 		-- Add the appropriate offset
 		local x = self.HoleRadius+profilept[1]
@@ -63,8 +106,8 @@ function Torus.getProfileVertex(self, u)
 	end
 
 	-- If we don't have a profile generator
-	-- Assume the profile should be a sphere
-	local angle = alerp(self.MinTheta, self.MaxTheta, u)
+	-- Assume the profile should be a circle
+	local angle = glsl.mix(self.MinTheta, self.MaxTheta, u)
 	local x = (self.HoleRadius+self.ProfileRadius*sin(angle))
 	local y = (self.HoleRadius+self.ProfileRadius*sin(angle))
 	local z = self.ProfileRadius*cos(angle)
@@ -73,7 +116,7 @@ function Torus.getProfileVertex(self, u)
 end
 
 function Torus.getVertex(self, u, v)
-	local phi = alerp(self.MinPhi, self.MaxPhi, v)
+	local phi = glsl.mix(self.MinPhi, self.MaxPhi, v)
 
 
 	local profilept, normal = self:getProfileVertex(u)

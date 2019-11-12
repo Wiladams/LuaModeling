@@ -4,44 +4,44 @@
 ]]
 local glsl = require("lmodel.glsl")
 
-local PolyMesh = {}
-setmetatable(PolyMesh, {
+local TriangleMesh = {}
+setmetatable(TriangleMesh, {
 	__call = function(self, ...)
 		return self:new(...)
 	end;
 })
-local PolyMesh_mt = {
-	__index = PolyMesh;
+local TriangleMesh_mt = {
+	__index = TriangleMesh;
 }
 
 
-function PolyMesh.new(self, obj)
+function TriangleMesh.new(self, obj)
 	obj = obj or {}		-- create object if user does not provide one
 
 	obj.vertices = obj.vertices or {}
 	obj.edges = obj.edges or {}
 	obj.faces= obj.faces or {}
 
-	setmetatable(obj, PolyMesh_mt)
+	setmetatable(obj, TriangleMesh_mt)
 
 	return obj
 end
 
-function PolyMesh:Vertices()
+function TriangleMesh:Vertices()
 	return self.vertices
 end
 
-function PolyMesh:Faces()
+function TriangleMesh:Faces()
 	return self.faces
 end
 
 -- Add a vertex to the mesh
-function PolyMesh.addvertex(self, v)
+function TriangleMesh.addvertex(self, v)
 	table.insert(self.vertices, v)
 	return #self.vertices;
 end
 
-function PolyMesh.addvertices(self, verts)
+function TriangleMesh.addvertices(self, verts)
 	for i,v in ipairs(verts) do
 		self:addvertex(v)
 	end
@@ -55,9 +55,13 @@ end
 	from the array of vertices.
 ]]
 -- Add a face to the mesh
-function PolyMesh.addface(self, face)
-	-- BUGBUG - we want to calculate the face normal
+function TriangleMesh.addface(self, face)
+
+	-- we want to calculate the face normal
 	-- right here so we don't have to calculate it later
+	-- BUGBUG - it might be useful to store this in yet another array
+	--   rather than altering the face object itself, because that may
+	--   not be a mutable table.
 	local p0 = self.vertices[face[1]];
 	local p1 = self.vertices[face[2]];
 	local p2 = self.vertices[face[3]];
@@ -69,17 +73,17 @@ function PolyMesh.addface(self, face)
 
 	face.normal = norm
 
-	table.insert(self.faces, face)
+	local faceidx = table.insert(self.faces, face)
 
 	return #self.faces;
 end
 
 --  An edge is a connection between two points
-function PolyMesh.addedge(self, v1, v2, f1, f2)
+function TriangleMesh.addedge(self, v1, v2, f1, f2)
 	table.insert(self.edges, {v1,v2,f1, f2})
 	
 	return #self.edges;
 end
 
 
-return PolyMesh
+return TriangleMesh
