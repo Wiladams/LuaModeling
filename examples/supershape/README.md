@@ -14,13 +14,12 @@ Experimentation is your friend here.  Read the Paul Bourke material
 and try out various things.
 
 
-[mascot](images/mascot.PNG)
+Mascot<br/>
+![mascot](images/mascot.PNG?raw=true)
 ```lua
 local sshape = require ("lmodel.supershape")
 local oscad = require "lmodel.openscad_print"
 
--- Create a supershape
--- mascot image
 local f = assert(io.open("mascot.scad", 'w'));
 
 local shape1 = {m=6.0, n1=60, n2=55, n3=1000, a=1, b=1}
@@ -29,7 +28,8 @@ local shape2 = {m=6, n1=250, n2=100, n3=100, a=1, b=1}
 oscad.PolyMesh_print(f,sshape.getMesh(shape1, shape2, 64, 64))
 ```
 
-[cube]!(images/cube.PNG)
+Cube<br/>
+![cube](images/cube.PNG?raw=true)
 ```lua
 local sshape = require ("lmodel.supershape")
 local oscad = require "lmodel.openscad_print"
@@ -42,7 +42,8 @@ local shape2 = {n1=100, n2=100, n3=100, m=4, a=1, b=1}
 oscad.PolyMesh_print(f,sshape.getMesh(shape1, shape2, 64, 64))
 ```
 
-[diamond]!(images/diamond.PNG)
+Diamond<br/>
+![diamond](images/diamond.PNG?raw=true)
 ```lua
 local sshape = require ("lmodel.supershape")
 local oscad = require "lmodel.openscad_print"
