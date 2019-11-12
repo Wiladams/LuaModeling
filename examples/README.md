@@ -1,7 +1,9 @@
 Some examples.  Look at the various codes within this directory.  Bring up a command line and execute the files directly using your lua interpreter.  You will see a '.scad' file in the output directory.  Open that up with OpenSCAD and view the thing in question.  You can leave the OpenSCAD program open, play with parameters in the '.lua' file, rerun the program, and the OpenSCAD view will automatically change.<br/>
 
 
-Examples of [Platonic Solids](https://github.com/Wiladams/LuaModeling/tree/master/examples/platonics)
+Examples of [Platonic Solids](platonics)
+
+Examples of [Super Shapes](supershape)
 
 
 examples/ex_metaball.lua
