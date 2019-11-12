@@ -246,6 +246,9 @@ exports.vec4_mult_mat4 = vec4_mult_mat4
 	we can simply expand the dot product and put in the 
 	implied '1'.  Faster than memory allocation for a new table
 	and garbage collection pressure.
+
+	BUGBUG - should unroll one more level deep and eliminate the
+	mat4_col call.
 ]]
 local function point_mult_mat4(vec, mat)
 	local function dot34(a, b)

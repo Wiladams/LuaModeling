@@ -7,23 +7,17 @@ What?
 
 With LuaModeling, you can create 3D geometries and output them to OpenSCAD .scad files, or .stl
 
-I like OpenSCAD for its simplicity.  You can create fairly complex 3D models by writing
-code.  The OpenSCAD UI contains an editor and viewer, but the language itself is fairly constrained.
+While OpenSCAD is great for generating 3D models using code, the language itself is fairly constrained, and the runtime can be slow during various operations.
 
-LuaModeling recognizes that .scad and .stl files are fairly common, so it uses those
-formats as output.  The advantage of LuaModeling is using a very robust and fast language
-for creating the code for the 3D models.  Atop this, if you use LuaJIT, the code becomes even
-faster.
+LuaModeling can generate .scad and .stl files as output, so you can use OpenSCAD as a simple visualizer (which is does fairly well), and as an output converter.  Essentially, OpenSCAD is just another tool in a 3D modeling workflow.  The advantage of using lua as the modeling language is that it is very robust and fast.  When using LuaJIT as the runtime, the code becomes even faster.
 
-What this essentially does is use Lua as the modeling language, and .scad and .stl as the 
-universal output format.  You are free to use any editor you like, such as VS Code, or Sublime Text.
+You are free to use any editor you like, such as VS Code, or Sublime Text.
 
 How
 ===
 Installation
 ------------
-To install, simply copy the entirety of the lmodel directory into wherever your lua is
-installed.
+To install, simply copy the entirety of the lmodel directory into wherever your lua is installed.
 
 Workflow
 --------
@@ -32,11 +26,10 @@ Starting from the end result, you need to decide whether you want to create a .s
 
 ```lua
 local oscad = require "lmodel.openscad_print"
-local f = assert(io.open("output/cone.scad", 'w'));
+local f = assert(io.open("output/ex_cone.scad", 'w'));
 ```
 
-Next, you load the modules that you'll be using to put your model together.  In this case, we
-can create a simple cone.
+Next, you load the modules that you'll be using to put your model together.  In this case, we can create a simple cone.
 
 ```lua
 local cone = require("lmodel.cone")
@@ -53,32 +46,32 @@ Finally, you will want to generate the mesh, and write it to the output file.  I
 
 ```lua
 oscad.PolyMesh_print(f,c1:getMesh())
+f:close()
 ```
 
 
 Now that you've got your .lua file, you simply execute it from the command line:
 
 ```
-c:> luajit cone.lua
+c:> luajit ex_cone.lua
 ```
 
-You will get a cone.scad file in the same directory.  From there, you can open the file using
-the OpenSCAD program, and your mesh should show up in the window.<br/>
+You will get a ex_cone.scad file in the same directory.  From there, you can open the file using the OpenSCAD program, and your mesh should show up in the window.<br/>
 
 ![cone](images/cone.PNG?raw=true)<br/>
 
-Once you open the file in OpenSCAD, you can simply leave OpenSCAD open to make iterative changes to the source .lua program.  Each time you execute the model's program, it will regenerate the .scad file, which will cause OpenSCAD to read it again and re-render your model. This makes for a fairly rapid turnaround because you're not relying on OpenSCAD to generate the actual mesh, which can be fairly slow.  You're just relying on it to render the mesh, which it can do fairly quickly.
-
+Once you open the file in OpenSCAD, you can simply leave OpenSCAD open to make iterative changes to the source .lua program.  Since OpenSCAD can automatically watch for changes in a file, and re-render if it sees any, each time you execute the model's program, it will regenerate the .scad file, and OpenSCAD will re-render. This makes for a fairly rapid turnaround because you're not relying on OpenSCAD to generate the actual mesh, which can be fairly slow, depending on your algorithms.  You're just relying on it to render the mesh, which it can do fairly quickly.
 
 
 
 More Examples
 =============
-There are a growing number of [examples](https://github.com/Wiladams/LuaModeling/tree/master/examples) you can explore.  Here are a few simple ones to get a feel for the kinds of things
-you can create.
+You can look at these various [examples](https://github.com/Wiladams/LuaModeling/tree/master/examples) for ideas of what LuaModeling is capable of.
 
 
-
+Documentation
+=============
+The [Documentation](docs) should give you an idea of how LuaModeling is designed, and what can be done with it.
 
 TODO
 ====
