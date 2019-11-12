@@ -13,7 +13,7 @@ t:translate(20, 5, 0)
 print("== Translate(25, 5, 0) ==")
 oscad.mat4_print(t.CurrentTransform)
 
-local c1 = t:transformCoordinates(1,0,0)
+local c1 = t:transformPoint({1,0,0})
 print("== Transform ==")
 oscad.vec3_write(c1)
 end

@@ -3,6 +3,7 @@ local radians, degrees = math.rad, math.deg
 local sin, cos = math.sin, math.cos
 local maths = require("lmodel.maths")
 local vec4_mult_mat4 = maths.vec4_mult_mat4
+local point_mult_mat4 = maths.point_mult_mat4
 local mat4_mult_mat4 = maths.mat4_mult_mat4
 
 --[[
@@ -71,29 +72,24 @@ function Transformer.rotate(self, rx, ry, rz)
 	return self
 end
 
--- Apply accumulated transform to a point
-function Transformer.transformCoordinates(self, x, y, z)
-	return vec4_mult_mat4({x,y,z,1}, self.CurrentTransform)
-end
-
+-- Apply accumulated transform to a single point
 function Transformer.transformPoint(self, pt)
-	return vec4_mult_mat4({pt[1], pt[2], pt[3], 1}, self.CurrentTransform)
+	return point_mult_mat4(pt, self.CurrentTransform)
 end
 
---
--- Function: Iter_matm4_mult_mat4
---
--- Description: Given a matrix of homogenized input
---	points, multiply then by the transform matrix, and
---	return them one by one as an iterator.
+--[[
+	Function: transformedPoints
+
+	Description: return an iterator which applies the
+	current transform to all the points in a list.
+--]]
+
 function Transformer.transformedPoints(self, m4)
 	local function gen(param, row)
 		if row > #param.points then	-- If we've run out of rows
 			return nil;		-- we are done
 		else
-			local v = param.points[row]
-			local vh = {v[1], v[2], v[3], 1}
-			return row+1, vec4_mult_mat4(vh, param.transform);
+			return row+1, point_mult_mat4(param.points[row], param.transform);
 		end
 	end
 

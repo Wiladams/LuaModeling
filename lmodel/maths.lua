@@ -238,7 +238,28 @@ end
 exports.vec4_mult_mat4 = vec4_mult_mat4
 
 
+--[[
+	This routine is a speedup convenience.  It is a point 
+	transform using homogeneous points (x,y,z,1).  The vec
+	parameter is an xyz (only 3 elements).  Instead of padding
+	the vec by creating a new table with a last value of '1',
+	we can simply expand the dot product and put in the 
+	implied '1'.  Faster than memory allocation for a new table
+	and garbage collection pressure.
+]]
+local function point_mult_mat4(vec, mat)
+	local function dot34(a, b)
+		return a[1]*b[1]+a[2]*b[2]+a[3]*b[3]+1*b[4]
+	end
 
+	return {
+		dot34(vec, mat4_col(mat,1)),
+		dot34(vec, mat4_col(mat,2)),
+		dot34(vec, mat4_col(mat,3)),
+		dot34(vec, mat4_col(mat,4)),
+	}
+end
+exports.point_mult_mat4 = point_mult_mat4
 
 
 
