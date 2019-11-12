@@ -55,7 +55,8 @@ local shape2 = {n1=1, n2=1, n3=1, m=4, a=1, b=1}
 oscad.PolyMesh_print(f,sshape.getMesh(shape1, shape2, 4, 120))
 ```
 
-[flower]!(images/flower.PNG?raw=true)
+Flower<br/>
+![flower](images/flower.PNG?raw=true)
 ```lua
 local sshape = require ("lmodel.supershape")
 local oscad = require "lmodel.openscad_print"
