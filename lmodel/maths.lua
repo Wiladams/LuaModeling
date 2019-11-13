@@ -1,5 +1,4 @@
 -- BUGBUG - replace equivalents with glsl
--- BUGBUG - separate the cubic curve stuff out
 -- BUGBUG - separate vector stuff out
 
 local glsl = require("lmodel.glsl")
@@ -64,10 +63,12 @@ end
 exports.vec3_from_point3h = vec3_from_point3h
 
 
+--[[
 -- Multiply by a scalar
 local function vec4_mults(v, s)
 	return {v[1]*s, v[2]*s, v[3]*s, v[4]*s}
 end
+--]]
 
 -- Magnitude of a vector
 -- Gives the Euclidean norm
