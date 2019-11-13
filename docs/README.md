@@ -20,8 +20,8 @@ Since the build/model/view pipeline is relatively simple, the workflow encourage
 Building Blocks
 ---------------
 * [trimesh](trimesh.md)
-* openscad_print
-* STLWriter
+* [openscad_print](openscad.md)
+* STLWriter - a work in progress
 * MeshRenderer
 * glsl
 * imaging
