@@ -22,7 +22,7 @@ Building Blocks
 * [trimesh](trimesh.md)
 * [openscad_print](openscad.md)
 * STLWriter - a work in progress
-* MeshRenderer
+* MeshRenderer - a work in progress
 * glsl
 * imaging
 * maths

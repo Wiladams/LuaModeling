@@ -1,10 +1,15 @@
-mat4_print
-polygon_print
-PolyMesh_print
+# openscad_print
 
-The primiary function of the [openscad_print] module is to convert from the internal triangle mesh representation of a geometry into the OpenSCAD polyhedron form.  The single routine that does this is "PolyMesh_print(mesh, transform)".
 
-PolyMesh_print, takes two parameters.  The first is the mesh to be converted.  This mesh can be created by any means necessary, and the rest of the LuaModeling library provides several routines for creating these meshes using various techniques.  However it's done, this mesh parameter is required.
+The primiary function of the [openscad_print] module is to convert from the internal triangle mesh representation of a geometry into the OpenSCAD polyhedron form.  The module contains the following functions.
+
+* mat4_print
+* polygon_print(vertices)
+* PolyMesh_print(mesh, transform)
+
+The primary routine of interest in this module is "PolyMesh_print()".
+
+PolyMesh_print, takes two parameters.  The first is the mesh to be converted.  This mesh can be created by any means, and the rest of the LuaModeling library provides several routines for creating these meshes using various techniques.  However it's done, this mesh parameter is required.
 
 The transform, is a 4x4 matrix transform that can be applied to the vertices as the mesh is being printed.  This does not alter the vertices in the mesh itself, but generates converted vertices.
 
