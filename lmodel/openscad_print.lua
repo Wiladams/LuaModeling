@@ -10,10 +10,7 @@ local exports = {}
 local write = io.write
 local format = string.format
 
-local function printf(fmt, ...)
-	write(format(fmt, ...))
-end
-
+-- Convenient print routines
 local function fwrite(f, ...)
 	f:write(...)
 end
@@ -21,6 +18,24 @@ end
 local function fprintf(f, fmt, ...)
 	f:write(format(fmt, ...))
 end
+
+local function printf(fmt, ...)
+	fprintf(io.stdout, fmt, ...)
+end
+
+
+--[[ 
+	Writing various vector types
+--]]
+local function vec_fwrite(f, v)
+	f:write("[");
+	for i=1, #v do
+		f:write(v[i]-1,',');
+	end
+	f:write(']');
+end
+
+
 
 local function vec2_fwrite(f, v)
 	return fwrite(f, '[', v[1],',',v[2],']');
@@ -43,6 +58,16 @@ local function vec3_print_tuple(v)
 	io.write(v[1],',',v[2],',',v[3],'\n');
 end
 
+local function matx3_print(a)
+	print("[");
+	for i=1,#a  do
+		vec3_print(a[i]);
+		io.write(",\n");
+	end
+	print("]");
+end
+
+
 local function vec4_print(v)
 	write('[', v[1],',',v[2],',',v[3],',',v[4],']');
 	--io.write("[%5.2f,%5.2f,%5.2f,%5.2f]", v[1],v[2],v[3],v[4]);
@@ -63,14 +88,7 @@ local function mat4_print(m)
 end
 exports.mat4_print = mat4_print
 
-local function matx3_print(a)
-print("[");
-	for i=1,#a  do
-		vec3_print(a[i]);
-		io.write(",\n");
-	end
-	print("]");
-end
+
 
 
 local function matx4_print(a)
@@ -160,32 +178,6 @@ local function polyhedron_print(pts, width, height)
 end
 exports.polyhedron_print = polyhedron_print
 
-local function GetBiCubicVertices(M, umult, cps, steps)
-
-	G = cubic_vec3_to_cubic_vec4(cps);
-	mat4_print(G);
-	-- create a table for the results
-	results = {};
-
-	for step=0, steps  do
-		local U = maths.cubic_U(step/steps)
-		local pt0 = maths.cerp(U, M, G)
-
-		table.insert(results, pt0);
-		--vec4_print(pt0);
-	end
-
-	return results;
-end
-
-local function print_face_tuple(f, a)
-	f:write("[");
-	for i=1, #a do
-		f:write(a[i]-1,',');
-	end
-	f:write(']');
-
-end
 
 local function PolyMesh_fprint(f, mesh, tformer)
 	f:write("polyhedron(points= [\n");
@@ -200,11 +192,19 @@ local function PolyMesh_fprint(f, mesh, tformer)
 
 	f:write("faces=[\n");
 	for i,v in ipairs(mesh:Faces()) do
-		print_face_tuple(f, v)
+		vec_fwrite(f, v)
 		f:write(',\n')
 	end
 	f:write("]);\n");
 end
+exports.PolyMesh_fprint = PolyMesh_fprint
+
+--[[
+local function PolyMesh_print(mesh, tformer)
+	PolyMesh_printf(io.stdout, mesh, tformer)
+end
+--]]
+
 exports.PolyMesh_print = PolyMesh_fprint
 
 return exports

@@ -11,5 +11,6 @@ balls = {{15, 15, 0, 5}, {30, 15, 0, 5}, {20, 40, 0, 5}}
 --end
 
 for v in metaball.IterateMetaballs({200,200,200}, balls) do
-	vec3_print_tuple(v);
+	oscad.vec3_write(v);
+	print();
 end
