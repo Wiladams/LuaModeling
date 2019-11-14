@@ -90,6 +90,9 @@ local function apply2(f, v1, v2)
 	return nil
 end
 
+--[[
+	==== The functions
+]]
 local function add(x,y)
 	return apply2(function(x,y) return x + y end,x,y)
 end
@@ -104,8 +107,6 @@ local function mul(x,y)
 	return apply2(function(x,y) return x * y end,x,y)
 end
 exports.mul = mul
-
-
 
 local function div(x,y)
 	return apply2(function(x,y) return x / y end,x,y)
@@ -258,14 +259,9 @@ exports.ceil = math.ceil
 
 
 local function fract(x)
-	return x - floor(x);
+	return apply(function(x) return x-floor(x)end, x)
 end
 exports.fract = fract
-
-local function fract3(x)
-	return {fract(x[1]), fract(x[2]), fract(x[3])};
-end
-exports.fract3 = fract3
 
 
 exports.max = math.max
@@ -283,26 +279,28 @@ local function mix(x, y, a)
 end
 exports.mix = mix
 
-local function mix3(x, y,a)
-	return {mix(x[1],y[1],a), mix(x[2],y[2],a), mix(x[3],y[3],a)};
-end
-exports.mix3 = mix3
-
 local function mod(x, y)
 	return x-(y*floor(x/y));
 end
 exports.mod = mod
 
 local function clamp(x, minValue, maxValue)
-	return min(max(x,minValue),maxValue);
+	if type(x) == "number" then
+		return min(max(x,minValue),maxValue)
+	end
+
+	if type(x) == "table" then
+		local res = {}
+		for i=1,#x do
+			res[i] = min(max(x[i],minValue),maxValue)
+		end
+		return res
+	end
+
+	return nil
 end
 exports.clamp = clamp
 
-
-local function clamp3(x, minValue, maxValue)
-	return {clamp(x[1]), clamp(x[2]), clamp(x[3])};
-end
-exports.clamp3 = clamp3
 
 local function step(edge, x)
 	if (x < edge) then
@@ -371,6 +369,11 @@ local function length(v)
 end
 exports.length = length
 
+local function normalize(v)
+	return mul(v, 1/length(v))
+end
+exports.normalize = normalize
+
 local function distance(v1,v2)
 	return length(sub(v1,v2))
 end
@@ -396,14 +399,16 @@ exports.cross = cross
 --	Vector Relational (5.4)
 --=====================================
 local function isnumtrue(x)
-	return x ~= nil and x ~= 0
+	local n = tonumber(x)
+	return n ~= nil and n ~= 0
 end
 exports.isnumtrue = isnumtrue
 
 local function any(x)
 	for i=1,#x do
-		local f = isnumtrue(x[i])
-		if f then return true end
+		if isnumtrue(x[i]) then
+			return true 
+		end
 	end
 
 	return false

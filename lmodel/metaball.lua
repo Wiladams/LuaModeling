@@ -167,7 +167,7 @@ function Metaball.getVertex(self, u, v)
 	local latitude = PI - v * PI;
 
 	local xyz = self:beamsearch(longitude, latitude, self.radius, 0)
-	local norm = maths.vec3_norm(xyz)
+	local norm = glsl.normalize(xyz)
 
 	return xyz, norm;
 end

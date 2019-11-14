@@ -23,7 +23,7 @@ Building Blocks
 * [openscad_print](openscad.md)
 * STLWriter - a work in progress
 * MeshRenderer - a work in progress
-* glsl
+* [glsl](glsl.md)
 * imaging
 * maths
 

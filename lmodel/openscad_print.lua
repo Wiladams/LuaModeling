@@ -180,7 +180,8 @@ exports.polyhedron_print = polyhedron_print
 
 
 local function PolyMesh_fprint(f, mesh, tformer)
-	f:write("polyhedron(points= [\n");
+	f:write("polyhedron(\n")
+	f:write("points = [\n");
 	for i,pt in ipairs(mesh:Vertices()) do
 		if tformer then
 			pt = tformer:transformPoint(pt)
@@ -190,7 +191,7 @@ local function PolyMesh_fprint(f, mesh, tformer)
 	end
 	f:write("],\n");
 
-	f:write("faces=[\n");
+	f:write("faces = [\n");
 	for i,v in ipairs(mesh:Faces()) do
 		vec_fwrite(f, v)
 		f:write(',\n')

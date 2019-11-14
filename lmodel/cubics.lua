@@ -4,7 +4,7 @@ local glsl = require("lmodel.glsl")
 local point3h_from_vec3 = maths.point3h_from_vec3
 local vec4_mult_mat4 = maths.vec4_mult_mat4
 local vec3_from_point3h = maths.vec3_from_point3h
-local vec3_norm = maths.vec3_norm
+
 
 local mul = glsl.mul
 
@@ -155,7 +155,7 @@ local function bicerp(u, w, mesh, M, umult)
 
 	-- Get the normal vector by crossing the two tangent
 	-- vectors
-	local npt = vec3_norm(glsl.cross(tupt, twpt));
+	local npt = glsl.normalize(glsl.cross(tupt, twpt));
 
 	-- BUGBUG - maybe return the two tangents as well as the normal?
 	-- return both the point, and the normal

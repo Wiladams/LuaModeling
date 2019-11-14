@@ -8,9 +8,6 @@ local cos, sin = math.cos, math.sin
 
 local BiParametric = require "lmodel.biparametric"
 
-local function vec3_norm(v)
-	return glsl.mul(v, 1/glsl.length(v))
-end
 
 local Ellipsoid = {}
 setmetatable(Ellipsoid, {
@@ -59,7 +56,7 @@ function Ellipsoid.getVertex(self, u, w)
 
 	local vert =  {xr, yr, zr}
 
-	local normal = vec3_norm(vert)
+	local normal = glsl.normalize(vert)
 
 	return vert, normal
 end

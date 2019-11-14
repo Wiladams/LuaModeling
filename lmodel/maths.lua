@@ -63,13 +63,9 @@ end
 exports.vec3_from_point3h = vec3_from_point3h
 
 
---[[
--- Multiply by a scalar
-local function vec4_mults(v, s)
-	return {v[1]*s, v[2]*s, v[3]*s, v[4]*s}
-end
---]]
 
+
+--[[
 -- Magnitude of a vector
 -- Gives the Euclidean norm
 function vec3_lengthsquared(v)
@@ -84,7 +80,7 @@ local function vec3_norm(v)
 	return glsl.mul(v, 1/glsl.length(v))
 end
 exports.vec3_norm = vec3_norm
-
+]]
 
 --=========================================
 --	Matrix 4X4 Operations
