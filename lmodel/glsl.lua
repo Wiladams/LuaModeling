@@ -31,13 +31,19 @@ local epsilon = 1E-12
 ]]
 local exports = {}
 
+-- The base vector types
+local function vec2(x, y) return {x, y} end
+local function vec3(x, y, z) return {x, y, z} end
+local function vec4(x, y, z, w) return {x, y, z, w} end
+
 -- built-ins with same semantics
 exports.pi = math.pi
 
 
 --[[
 	Apply the function 'f' to every element
-	of vector 'v'
+	of vector 'v'.  if 'v' is a single scalar
+	then apply the function to that single parameter
 
 	RETURN: returns a new instance of the table, does
 	not alter the existing table.
@@ -108,8 +114,9 @@ exports.div = div
 
 -- improved equality test with tolerance
 local function equal(v1,v2,tol)
+	tol = tol or epsilon
+
 	assert(type(v1)==type(v2),"equal("..type(v1)..","..type(v2)..") : incompatible types")
-	if not tol then tol=1E-12 end
 	
 	return apply(function(x) return x<=tol end,abs(sub(v1,v2)))
 end
@@ -205,8 +212,15 @@ function exports.log2(x) return log(x)/log(2)  end
 
 exports.sqrt = math.sqrt
 
-function exports.inv(x) return 1/x end
-function exports.invsqrt(x) return 1/sqrt(x) end
+local function inv(x)
+	return apply(function(x) return 1/x end, x)
+end
+exports.inv = inv
+
+local function invsqrt(x)
+	return apply(function(x) return 1/sqrt(x) end, x)
+end
+exports.invsqrt = invsqrt
 
 
 --=====================================
