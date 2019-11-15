@@ -24,8 +24,8 @@ Building Blocks
 * STLWriter - a work in progress
 * MeshRenderer - a work in progress
 * [glsl](glsl.md)
-* imaging
-* maths
+* imaging - a work in progress
+* [maths](maths.md)
 
 Shapes
 ------

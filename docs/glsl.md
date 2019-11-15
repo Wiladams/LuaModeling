@@ -1,6 +1,8 @@
 # glsl
 
-LuaModeling supports various functions to deal with vectors, trigonometry, and other functions to support the creation of 3D Models.  As a convenience, LuaModeling supports an interface that is familiar to the OpenGL Shading Language (glsl).  The functions are listed below.  More complete documentation on how they behave can be found by searching for 'glsl core functions'.
+The natively supported math library in lua has various trigonometry and other functions.  When doing 3D modeling, there is a need for these trig functions, and quite a few more.  In addition to the basic trig, you want to perform functions on arrays of values, not just single values.  There is also need for clamping, linear interpolation, curve evaluation, and a few more.
+
+LuaModeling provides a set of math functions that augment and enhance the basic lua math library.  As a convenience, LuaModeling supports an interface that is familiar to the OpenGL Shading Language (glsl).  The functions are listed below.  More complete documentation on how they behave can be found by searching for 'glsl core functions'.
 
 Arithmetic
 ----------
